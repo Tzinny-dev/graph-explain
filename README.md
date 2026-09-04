@@ -40,7 +40,9 @@ importantes**, con métricas de evaluación y visualización integradas.
 - **Visualización** estática (matplotlib + networkx) e interactiva (pyvis → HTML).
 - **Backends**: PyTorch Geometric y DGL (vía adaptador; DGL requiere una versión
   de PyTorch con librerías precompiladas de graphbolt).
-- **CLI** para explicar modelos guardados sin escribir código.
+- **CLI** para explicar modelos guardados sin escribir código y **benchmark
+  comparativo** de todos los métodos sobre un nodo (tabla, JSON y HTML).
+- **Comparativa programática**: `compare(...)` para evaluar y comparar métodos.
 
 ## Instalación
 
@@ -192,6 +194,33 @@ Opciones principales: `--method`, `--node`, `--target-class`, `--epochs`,
 `--plot`, `--html`. El informe JSON incluye método, predicciones, métricas y el
 resumen estructurado (`summarize`) con nodos/aristas top-k.
 
+## Benchmark comparativo (fase 7)
+
+`compare(data, model, node=...)` ejecuta todos los métodos sobre un nodo,
+computa la batería de métricas (fid+ / fid- / GEA / sparsity / stability) y
+devuelve un dict estructurado; los métodos no aplicables (p. ej. Attention sin
+`GATConv`) y las métricas sin sentido se marcan como `skipped`/`None` sin
+abortar el resto:
+
+```python
+from graph_explain import compare, report_html
+
+results = compare(data, model, node=42, methods=None,   # None = todos
+                  num_perturbations=5, epochs=200)
+report_html(results, "bench.html")                      # informe HTML autocontenido
+```
+
+La CLI tiene el subcomando equivalente:
+
+```bash
+graph-explain bench --model model.pt --data data.pt --node 42 \
+    --methods all --num-perturbations 5 \
+    --json bench.json --html bench.html
+```
+
+Nota: `gea` solo está definida si el nodo pertenece a un subgrafo de ground
+truth del benchmark (BA-Shapes); para el resto aparece vacía en la tabla.
+
 ## Roadmap
 
 - [x] Fase 2: PGExplainer, SubgraphX, Integrated Gradients
@@ -203,6 +232,7 @@ resumen estructurado (`summarize`) con nodos/aristas top-k.
 - [x] Fase 4: narración con LLM (`describe` determinista + `narrate` con LLM enchufable)
 - [x] Fase 5: CLI completa (todos los métodos, métricas, narración y export JSON)
 - [x] Fase 6: más métodos (DeepLIFT rescale, Attention/GAT, Gradient×Input)
+- [x] Fase 7: benchmark comparativo (`compare` + subcomando CLI `bench`, tabla e informes JSON/HTML)
 
 ## Licencia
 

@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import argparse
-import inspect
 import json
 import sys
 from typing import Any
 
 from graph_explain import __version__
+from graph_explain.core.registry import get_algorithm, instantiate
 
 _METHODS = [
     "gnn_explainer",
@@ -90,28 +90,37 @@ def build_parser() -> argparse.ArgumentParser:
     explain.add_argument(
         "--json", default=None, help="Exportar resumen + métricas a .json"
     )
+
+    bench = sub.add_parser(
+        "bench", help="Benchmark comparativo de métodos sobre un nodo"
+    )
+    bench.add_argument("--model", required=True, help="Ruta al modelo guardado (.pt)")
+    bench.add_argument("--data", required=True, help="Ruta al Data guardado (.pt)")
+    bench.add_argument("--node", type=int, required=True, help="Índice del nodo")
+    bench.add_argument("--target-class", type=int, default=None)
+    bench.add_argument(
+        "--methods",
+        default="all",
+        help="Métodos separados por comas (o 'all'). Aliases: "
+        f"{', '.join(_METHODS)}",
+    )
+    bench.add_argument("--backend", default="pyg", choices=["pyg", "dgl"])
+    bench.add_argument("--epochs", type=int, default=200)
+    bench.add_argument("--lr", type=float, default=None)
+    bench.add_argument("--top-k", type=int, default=5)
+    bench.add_argument("--num-perturbations", type=int, default=5)
+    bench.add_argument("--noise-std", type=float, default=0.05)
+    bench.add_argument("--threshold", type=float, default=0.5)
+    bench.add_argument("--seed", type=int, default=0)
+    bench.add_argument("--no-stability", action="store_true")
+    bench.add_argument("--json", default=None, help="Exportar resultados a .json")
+    bench.add_argument(
+        "--html", default=None, help="Exportar informe comparativo a .html"
+    )
     return parser
 
 
-def _params(cls: type) -> set[str]:
-    try:
-        sig = inspect.signature(cls.__init__)
-    except (TypeError, ValueError):
-        return set()
-    names = set()
-    for name, p in sig.parameters.items():
-        if name in ("self", "kwargs", "args"):
-            continue
-        if p.kind in (p.POSITIONAL_OR_KEYWORD, p.KEYWORD_ONLY):
-            names.add(name)
-    return names
-
-
 def _instantiate(name: str, args: argparse.Namespace):
-    from graph_explain.core.registry import get_algorithm
-
-    cls = get_algorithm(name)
-    accepted = _params(cls)
     kw: dict[str, Any] = {}
     for attr, param in (
         ("epochs", "epochs"),
@@ -123,11 +132,11 @@ def _instantiate(name: str, args: argparse.Namespace):
         ("steps", "steps"),
     ):
         val = getattr(args, attr)
-        if param in accepted and val is not None:
+        if val is not None:
             kw[param] = val
-    if "normalize" in accepted and args.normalize:
+    if "normalize" in dir(args) and args.normalize:
         kw["normalize"] = True
-    return cls(**kw)
+    return instantiate(name, **kw)
 
 
 def _make_explainer(args: argparse.Namespace):
@@ -289,6 +298,104 @@ def _cmd_explain(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_bench(args: argparse.Namespace) -> int:
+    import torch
+
+    from graph_explain.core.benchmark import DEFAULT_METHODS, compare, report_html
+
+    model = torch.load(args.model, map_location="cpu", weights_only=False)
+    data = torch.load(args.data, map_location="cpu", weights_only=False)
+    model.eval()
+
+    if args.methods.strip().lower() == "all":
+        methods = list(DEFAULT_METHODS)
+    else:
+        methods = []
+        for item in args.methods.split(","):
+            item = item.strip()
+            if not item:
+                continue
+            try:
+                methods.append(get_algorithm(item).name)
+            except ValueError as exc:
+                print(f"Error: {exc}", file=sys.stderr)
+                return 2
+
+    print(
+        f"Benchmark sobre nodo {args.node} ({len(methods)} métodos) - "
+        f"backend {args.backend}\n"
+    )
+    results = compare(
+        data,
+        model,
+        node=args.node,
+        target_class=args.target_class,
+        backend=args.backend,
+        methods=methods,
+        top_k=args.top_k,
+        num_perturbations=args.num_perturbations,
+        noise_std=args.noise_std,
+        epochs=args.epochs,
+        lr=args.lr,
+        seed=args.seed,
+        mask_threshold=args.threshold,
+        stability=not args.no_stability,
+    )
+
+    headers = ("Método", "fid+", "fid-", "GEA", "sparsity", "stab")
+    widths = [len(h) for h in headers]
+    rows: list[tuple[Any, ...]] = []
+    for name, entry in results.items():
+        if name.startswith("_"):
+            continue
+        if entry["skipped"]:
+            rows.append((name, "no aplicable", "", "", "", ""))
+            continue
+        m = entry["metrics"]
+        rows.append(
+            (
+                name,
+                "" if m["fidelity_plus"] is None else f"{m['fidelity_plus']:.3f}",
+                "" if m["fidelity_minus"] is None else f"{m['fidelity_minus']:.3f}",
+                "" if m["gea"] is None else f"{m['gea']:.3f}",
+                "" if m["sparsity"] is None else f"{m['sparsity']:.3f}",
+                "" if m["stability"] is None else f"{m['stability']:.3f}",
+            )
+        )
+
+    widths[0] = max(widths[0], max((len(r[0]) for r in rows), default=0))
+    for i in range(1, len(headers)):
+        widths[i] = max(
+            widths[i], max((len(r[i]) for r in rows if r[i]), default=0)
+        )
+
+    for i, h in enumerate(headers):
+        widths[i] = max(widths[i], len(h))
+    line = "  ".join(h.ljust(widths[i]) for i, h in enumerate(headers))
+    print(line)
+    print("  ".join("-" * w for w in widths))
+    for row in rows:
+        print("  ".join(str(c).ljust(widths[i]) for i, c in enumerate(row)))
+
+    skipped = results["_meta"]["skipped"]
+    if skipped:
+        print("\nOmitidos:")
+        for name, reason in skipped.items():
+            print(f"  {name}: {reason}")
+
+    if args.json:
+        out = {name: entry for name, entry in results.items() if not name.startswith("_")}
+        out["_meta"] = results["_meta"]
+        out["_meta"]["version"] = __version__
+        with open(args.json, "w", encoding="utf-8") as fh:
+            json.dump(_json_safe(out), fh, indent=2, ensure_ascii=False)
+        print(f"\nResultados JSON guardados en {args.json}")
+    if args.html:
+        report_html(results, args.html)
+        print(f"Informe HTML guardado en {args.html}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -297,6 +404,8 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     if args.command == "explain":
         return _cmd_explain(args)
+    if args.command == "bench":
+        return _cmd_bench(args)
     return 1
 
 

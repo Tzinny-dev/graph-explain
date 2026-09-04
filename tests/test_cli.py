@@ -206,3 +206,60 @@ class TestCLI:
                     "no_such",
                 ]
             )
+
+    def test_bench_json(self, tmp_path, capsys):
+        model_path, data_path = _save_model_and_data(tmp_path)
+        json_path = tmp_path / "bench.json"
+        rc = main(
+            [
+                "bench",
+                "--model",
+                model_path,
+                "--data",
+                data_path,
+                "--node",
+                "0",
+                "--methods",
+                "dl,gx,attention",
+                "--no-stability",
+                "--json",
+                str(json_path),
+            ]
+        )
+        assert rc == 0
+        out = capsys.readouterr().out
+        assert "fid+" in out and "deep_lift" in out
+
+        report = json.loads(json_path.read_text())
+        assert report["_meta"]["node"] == 0
+        assert report["_meta"]["version"] == __version__
+        assert "deep_lift" in report and "grad_x_input" in report
+        assert report["attention"]["skipped"]
+        for key in ("fidelity_plus", "fidelity_minus", "sparsity", "stability"):
+            assert key in report["deep_lift"]["metrics"]
+        assert report["deep_lift"]["summary"]
+        assert report["deep_lift"]["metrics"]["stability"] is None
+
+    def test_bench_html(self, tmp_path, capsys):
+        model_path, data_path = _save_model_and_data(tmp_path)
+        html_path = tmp_path / "bench.html"
+        rc = main(
+            [
+                "bench",
+                "--model",
+                model_path,
+                "--data",
+                data_path,
+                "--node",
+                "0",
+                "--methods",
+                "saliency",
+                "--no-stability",
+                "--html",
+                str(html_path),
+            ]
+        )
+        assert rc == 0
+        html = html_path.read_text()
+        assert "<table>" in html and "fid+" in html
+        assert capsys.readouterr().out.count("saliency") >= 1

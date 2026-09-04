@@ -1,5 +1,13 @@
 from .backends import DGLAdapter, PyGAdapter, get_backend
-from .core import Explainer, Explanation, get_algorithm, register
+from .core import (
+    Explainer,
+    Explanation,
+    compare,
+    get_algorithm,
+    instantiate,
+    register,
+    report_html,
+)
 from .core.evaluation import (
     evaluate_fidelity_minus,
     evaluate_fidelity_plus,
@@ -22,7 +30,7 @@ from .methods import (
 from .narration import Narrator, describe, narrate, summarize
 from .visualization import show, visualize_interactive, visualize_static
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 
 __all__ = [
     "AttentionExplainer",
@@ -41,6 +49,7 @@ __all__ = [
     "Saliency",
     "SubgraphX",
     "__version__",
+    "compare",
     "describe",
     "evaluate_fidelity_minus",
     "evaluate_fidelity_plus",
@@ -49,8 +58,10 @@ __all__ = [
     "evaluate_stability",
     "get_algorithm",
     "get_backend",
+    "instantiate",
     "narrate",
     "register",
+    "report_html",
     "show",
     "summarize",
     "visualize_interactive",
