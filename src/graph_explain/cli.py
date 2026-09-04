@@ -23,6 +23,15 @@ _METHODS = [
     "gnn_lrp",
     "gnn-lrp",
     "lrp",
+    "deep_lift",
+    "deeplift",
+    "dl",
+    "attention",
+    "gat",
+    "attention_explainer",
+    "grad_x_input",
+    "gradient_x_input",
+    "gx",
     "counterfactual",
     "cf",
 ]
@@ -207,12 +216,16 @@ def _cmd_explain(args: argparse.Namespace) -> int:
 
     algorithm = _instantiate(args.method, args)
     explainer = _make_explainer(args)
-    explanation = explainer.explain(
-        data,
-        model,
-        index=args.node,
-        target_class=args.target_class,
-    )
+    try:
+        explanation = explainer.explain(
+            data,
+            model,
+            index=args.node,
+            target_class=args.target_class,
+        )
+    except ValueError as exc:
+        print(f"Error con {args.method}: {exc}", file=sys.stderr)
+        return 2
     algorithm_class = get_algorithm(args.method)
 
     print(f"Método: {args.method} ({algorithm_class.__name__})")

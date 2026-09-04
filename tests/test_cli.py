@@ -118,6 +118,40 @@ class TestCLI:
             == 0
         )
 
+    def test_explain_new_methods(self, tmp_path, capsys):
+        model_path, data_path = _save_model_and_data(tmp_path)
+        for method in ("dl", "gx"):
+            rc = main(
+                [
+                    "explain",
+                    "--model",
+                    model_path,
+                    "--data",
+                    data_path,
+                    "--method",
+                    method,
+                    "--node",
+                    "0",
+                ]
+            )
+            assert rc == 0, method
+        # attention requiere un modelo con GATConv -> error controlado (rc 2)
+        rc = main(
+            [
+                "explain",
+                "--model",
+                model_path,
+                "--data",
+                data_path,
+                "--method",
+                "attention",
+                "--node",
+                "0",
+            ]
+        )
+        assert rc == 2
+        assert "GATConv" in capsys.readouterr().err
+
     def test_node_required(self, tmp_path, capsys):
         model_path, data_path = _save_model_and_data(tmp_path)
         rc = main(

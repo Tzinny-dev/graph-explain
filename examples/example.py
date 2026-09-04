@@ -7,10 +7,13 @@ import torch
 
 from examples.model import default_data_and_model, train
 from graph_explain import (
+    AttentionExplainer,
     Counterfactual,
+    DeepLift,
     Explainer,
     GNNExplainer,
     GNNGatedLRP,
+    GradXInput,
     IntegratedGradients,
     PGExplainer,
     Saliency,
@@ -47,6 +50,9 @@ def main():
         ("PGExplainer", PGExplainer(epochs=120, lr=0.01)),
         ("SubgraphX", SubgraphX(rollout=20, num_hops=3, max_nodes=15)),
         ("GNN-LRP", GNNGatedLRP(normalize=True)),
+        ("DeepLIFT", DeepLift()),
+        ("Attention", AttentionExplainer()),
+        ("GradXInput", GradXInput()),
         ("Contrafactual", Counterfactual(mode="edge", max_steps=8, hops=2)),
         ("Saliency", Saliency()),
         ("IntegratedGradients", IntegratedGradients(steps=25)),
@@ -64,7 +70,11 @@ def main():
             else 0.5
         )
         explainer = Explainer(algorithm=algo, mask_threshold=mask_threshold)
-        expl = explainer.explain_node(data, model, node_idx=anchor)
+        try:
+            expl = explainer.explain_node(data, model, node_idx=anchor)
+        except ValueError as exc:
+            print(f"{name:20s} -> no aplicable aquí ({exc})")
+            continue
         metrics = (
             expl.evaluate(metrics=["fidelity", "sparsity"])
             if expl.prediction_explanation is not None

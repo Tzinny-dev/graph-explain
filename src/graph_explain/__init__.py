@@ -8,9 +8,12 @@ from .core.evaluation import (
     evaluate_stability,
 )
 from .methods import (
+    AttentionExplainer,
     Counterfactual,
+    DeepLift,
     GNNExplainer,
     GNNGatedLRP,
+    GradXInput,
     IntegratedGradients,
     PGExplainer,
     Saliency,
@@ -22,12 +25,15 @@ from .visualization import show, visualize_interactive, visualize_static
 __version__ = "0.4.0"
 
 __all__ = [
+    "AttentionExplainer",
     "Counterfactual",
     "DGLAdapter",
+    "DeepLift",
     "Explainer",
     "Explanation",
     "GNNExplainer",
     "GNNGatedLRP",
+    "GradXInput",
     "IntegratedGradients",
     "Narrator",
     "PGExplainer",

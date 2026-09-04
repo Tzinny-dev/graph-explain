@@ -16,6 +16,13 @@ importantes**, con métricas de evaluación y visualización integradas.
 - `GNNGatedLRP` — propagación de relevancia por capas (LRP-0/z+) sobre GCNs;
   reparte la relevancia entre nodos y aristas según las contribuciones positivas
   de cada capa conv/lineal; soporta `GCNConv` + `ReLU` + `Linear`.
+- `DeepLift` — regla aditiva rescale con baseline (zero): cada característica
+  recibe una contribución proporcional a su efecto en la clase objetivo;
+  conservativa (la suma de contribuciones ≈ Δ logits); soporta
+  `GCNConv` + `ReLU` + `Linear`.
+- `AttentionExplainer` — importancia de nodos/aristas a partir de los pesos de
+  atención de un modelo `GATConv` (softmax por vecino, media sobre cabezas y capas).
+- `GradXInput` — gradiente × activación (baseline zero) para nodos y aristas.
 - `Counterfactual` — perturbación mínima (aristas o features) que cambia la
   predicción de un nodo (búsqueda greedy determinista); devuelve los elementos
   modificados como importancia y los logits tras el cambio.
@@ -195,6 +202,7 @@ resumen estructurado (`summarize`) con nodos/aristas top-k.
 - [x] Fase 4: explicaciones contrafactuales (mínima eliminación de aristas/features que cambia la clase)
 - [x] Fase 4: narración con LLM (`describe` determinista + `narrate` con LLM enchufable)
 - [x] Fase 5: CLI completa (todos los métodos, métricas, narración y export JSON)
+- [x] Fase 6: más métodos (DeepLIFT rescale, Attention/GAT, Gradient×Input)
 
 ## Licencia
 
