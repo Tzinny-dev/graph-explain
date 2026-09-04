@@ -16,10 +16,10 @@ from .methods import (
     Saliency,
     SubgraphX,
 )
-from .narration import Narrator, describe, narrate
+from .narration import Narrator, describe, narrate, summarize
 from .visualization import show, visualize_interactive, visualize_static
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 __all__ = [
     "Counterfactual",
@@ -46,6 +46,7 @@ __all__ = [
     "narrate",
     "register",
     "show",
+    "summarize",
     "visualize_interactive",
     "visualize_static",
 ]

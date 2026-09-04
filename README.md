@@ -153,6 +153,38 @@ Ejemplo en `examples/example.py`, benchmark con `num_houses=30`: GNNExplainer �
 `fid+ 0.74 / fid- 0.99 / GEA 0.92 / stab 0.85`.
 ````
 
+## CLI (fase 5)
+
+La interfaz de línea de comandos cubre todos los métodos (incluye aliases
+`lrp`/`gnn_lrp` y `cf`/`counterfactual`), métricas, narración e informes JSON:
+
+```bash
+graph-explain --version
+
+# Explicación contrafactual sobre el nodo 42 + narración + informe JSON
+graph-explain explain --model model.pt --data data.pt \
+    --method counterfactual --node 42 --mode feature \
+    --hops 2 --max-steps 10 --describe --json report.json
+
+# GNN-LRP normalizado con métricas
+graph-explain explain --model model.pt --data data.pt \
+    --method lrp --node 42 --normalize \
+    --metrics fidelity_plus,fidelity_minus,gea,stability \
+    --top-k 5 --num-perturbations 5
+
+# GNNExplainer + visualizaciones estática e interactiva
+graph-explain explain --model model.pt --data data.pt \
+    --method gnn_explainer --node 42 --epochs 200 \
+    --threshold 0.5 --plot expl.png --html expl.html
+```
+
+Opciones principales: `--method`, `--node`, `--target-class`, `--epochs`,
+`--lr`, `--mode` (edge/feature), `--hops`, `--max-steps`, `--eps`, `--steps`,
+`--normalize`, `--backend` (pyg/dgl), `--threshold`, `--top-k`, `--metrics`,
+`--num-perturbations`, `--noise-std`, `--describe`, `--json`, `--output`,
+`--plot`, `--html`. El informe JSON incluye método, predicciones, métricas y el
+resumen estructurado (`summarize`) con nodos/aristas top-k.
+
 ## Roadmap
 
 - [x] Fase 2: PGExplainer, SubgraphX, Integrated Gradients
@@ -162,6 +194,7 @@ Ejemplo en `examples/example.py`, benchmark con `num_houses=30`: GNNExplainer �
 - [x] Fase 4: GNN-LRP (relevancia por capas para GCNs; valida el motivo house en BA-Shapes)
 - [x] Fase 4: explicaciones contrafactuales (mínima eliminación de aristas/features que cambia la clase)
 - [x] Fase 4: narración con LLM (`describe` determinista + `narrate` con LLM enchufable)
+- [x] Fase 5: CLI completa (todos los métodos, métricas, narración y export JSON)
 
 ## Licencia
 
