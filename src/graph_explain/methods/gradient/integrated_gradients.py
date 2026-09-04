@@ -11,6 +11,8 @@ from ..base import ExplanationAlgorithm
 
 @register("integrated_gradients", "ig")
 class IntegratedGradients(ExplanationAlgorithm):
+    graph_level = True
+
     def __init__(
         self,
         steps: int = 50,
@@ -35,7 +37,9 @@ class IntegratedGradients(ExplanationAlgorithm):
         x = backend.node_features(data)
         edge_index = backend.edge_index(data)
 
-        if isinstance(index, int):
+        if index is None:
+            idx = torch.zeros(1, dtype=torch.long, device=x.device)
+        elif isinstance(index, int):
             idx = torch.tensor([index], device=x.device)
         else:
             idx = torch.as_tensor(index, device=x.device)

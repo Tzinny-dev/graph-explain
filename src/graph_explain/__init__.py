@@ -12,6 +12,7 @@ from .core.evaluation import (
     evaluate_fidelity_minus,
     evaluate_fidelity_plus,
     evaluate_gea,
+    evaluate_gea_graph,
     evaluate_sparsity,
     evaluate_stability,
 )
@@ -34,7 +35,7 @@ from .methods import (
 from .narration import Narrator, describe, narrate, summarize
 from .visualization import show, visualize_interactive, visualize_static
 
-__version__ = "0.6.0"
+__version__ = "0.7.0"
 
 __all__ = [
     "AttentionExplainer",
@@ -62,6 +63,7 @@ __all__ = [
     "evaluate_fidelity_minus",
     "evaluate_fidelity_plus",
     "evaluate_gea",
+    "evaluate_gea_graph",
     "evaluate_sparsity",
     "evaluate_stability",
     "get_algorithm",

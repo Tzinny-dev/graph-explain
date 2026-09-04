@@ -8,6 +8,7 @@ import torch
 
 class ExplanationAlgorithm(ABC):
     name = "base"
+    graph_level = False
 
     @abstractmethod
     def explain(

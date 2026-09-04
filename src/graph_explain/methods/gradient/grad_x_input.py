@@ -20,6 +20,8 @@ class GradXInput(ExplanationAlgorithm):
     características.
     """
 
+    graph_level = True
+
     def __init__(
         self,
         baseline: str = "zero",

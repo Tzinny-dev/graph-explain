@@ -21,6 +21,8 @@ class GuidedBackprop(ExplanationAlgorithm):
     tiene ninguno, cae a gradiente estándar (metadato `guided=False`).
     """
 
+    graph_level = True
+
     def __init__(self, fallback_to_gradient: bool = True, **kwargs):
         self.fallback_to_gradient = fallback_to_gradient
 

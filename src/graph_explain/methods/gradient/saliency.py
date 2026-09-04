@@ -11,6 +11,8 @@ from ..base import ExplanationAlgorithm
 
 @register("saliency", "gradient", "grad")
 class Saliency(ExplanationAlgorithm):
+    graph_level = True
+
     def __init__(
         self,
         absolute: bool = True,
@@ -38,7 +40,9 @@ class Saliency(ExplanationAlgorithm):
         out = backend.forward(model, x, edge_index, edge_weight=edge_weight)
         logits = out
 
-        if isinstance(index, int):
+        if index is None:
+            idx = torch.zeros(1, dtype=torch.long, device=x.device)
+        elif isinstance(index, int):
             idx = torch.tensor([index], device=x.device)
         else:
             idx = torch.as_tensor(index, device=x.device)

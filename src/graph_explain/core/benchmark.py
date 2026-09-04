@@ -7,6 +7,7 @@ from .evaluation import (
     evaluate_fidelity_minus,
     evaluate_fidelity_plus,
     evaluate_gea,
+    evaluate_gea_graph,
     evaluate_sparsity,
     evaluate_stability,
 )
@@ -78,12 +79,14 @@ def compare(
     mask_threshold: float = 0.5,
     stability: bool = True,
 ) -> dict:
-    """Ejecuta varios métodos de explicación sobre un nodo y compara métricas.
+    """Ejecuta varios métodos de explicación y compara métricas.
 
-    Devuelve un diccionario con una entrada por método (name → resultado):
-    clase, predicciones, métricas (fidelity±, GEA, sparsidad, estabilidad) y el
-    resumen estructurado `summarize`. Los métodos no aplicables o las métricas
-    que fallen se marcan como `skipped`/`None` sin abortar el resto.
+    Usa `node` para node-level (obligatorio) o `node=None` para graph-level
+    (los métodos solo-node se marcan como `skipped`). Devuelve un diccionario
+    con una entrada por método: clase, predicciones, métricas (fidelity±, GEA,
+    sparsidad, estabilidad) y el resumen estructurado `summarize`. Los métodos
+    no aplicables o las métricas que fallen se marcan como `skipped`/`None` sin
+    abortar el resto.
     """
     from ..backends import get_backend
 
@@ -91,6 +94,9 @@ def compare(
         methods = list(DEFAULT_METHODS)
     backend_obj = get_backend(backend)
     model.eval()
+
+    if node is None:
+        stability = False
 
     torch.manual_seed(seed)
     results: dict = {}
@@ -110,6 +116,11 @@ def compare(
             "summary": None,
             "skipped": None,
         }
+        if node is None and not cls.graph_level:
+            entry["skipped"] = "solo node-level"
+            results[name] = entry
+            skipped[name] = entry["skipped"]
+            continue
         if name == "attention" and not _has_gat(model):
             entry["skipped"] = "requiere un modelo con capas GATConv"
             results[name] = entry
@@ -123,7 +134,11 @@ def compare(
         )
         torch.manual_seed(seed)
         try:
-            expl = explainer.explain_node(data, model, node, target_class=target_class)
+            expl = (
+                explainer.explain_node(data, model, node, target_class=target_class)
+                if node is not None
+                else explainer.explain_graph(data, model, target_class=target_class)
+            )
         except (ValueError, TypeError) as exc:
             entry["skipped"] = str(exc)
             results[name] = entry
@@ -142,9 +157,18 @@ def compare(
         m["fidelity_minus"] = _safe(
             lambda expl=expl_arg: float(evaluate_fidelity_minus(model, expl))
         )
-        m["gea"] = _safe(
-            lambda expl=expl_arg: float(evaluate_gea(expl, data=data, top_k=top_k))
-        )
+        if node is not None:
+            m["gea"] = _safe(
+                lambda expl=expl_arg: float(
+                    evaluate_gea(expl, data=data, top_k=top_k)
+                )
+            )
+        else:
+            m["gea"] = _safe(
+                lambda expl=expl_arg: float(
+                    evaluate_gea_graph(expl, data=data, top_k=top_k)
+                )
+            )
         m["sparsity"] = _safe(lambda expl=expl_arg: float(evaluate_sparsity(expl)))
         m["sparsity_local"] = _safe(
             lambda expl=expl_arg: float(evaluate_sparsity(expl, local=True))

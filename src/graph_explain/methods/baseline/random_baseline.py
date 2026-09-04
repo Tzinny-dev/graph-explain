@@ -18,6 +18,8 @@ class RandomBaseline(ExplanationAlgorithm):
     benchmarks comparativos.
     """
 
+    graph_level = True
+
     def __init__(self, seed: int | None = 0, **kwargs):
         self.seed = seed
 

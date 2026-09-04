@@ -7,6 +7,10 @@ importantes**, con métricas de evaluación y visualización integradas.
 ## Características
 
 - **API unificada**: un solo objeto `Explainer` para todos los métodos.
+- **Node-level y graph-level**: `explain_node(...)` explica la predicción de un
+  nodo; `explain_graph(...)` (o CLI sin `--node`) explica un grafo completo con
+  modelos sequence-context (`task_level = "graph"`), incluyendo métricas GEA
+  graph-level y benchmark comparativo.
 - **Métodos de explicación**:
 - `GNNExplainer` — máscaras suaves sobre nodos/aristas (perturbación).
   - `PGExplainer` — MLP que genera máscaras de aristas (inductive, rápido en inferencia).
@@ -45,7 +49,10 @@ importantes**, con métricas de evaluación y visualización integradas.
   - `evaluate_stability` — similitud media entre explicaciones ante perturbaciones de features/aristas.
   - `evaluate_gea` — **Graph Explanation Accuracy**: solape de los top-k con el subgrafo de ground truth (BA-Shapes).
 - **Benchmarks incluidos**: generador sintético BA-Shapes con ground truth y
-  helpers `ground_truth_nodes` / `ground_truth_edge_ids`.
+  helpers `ground_truth_nodes` / `ground_truth_edge_ids`; además
+  `build_graph_classification` genera un dataset de **clasificación de grafos**
+  (motivo house) con `gt_edge_mask` por grafo para GEA graph-level
+  (`evaluate_gea_graph`).
 - **Visualización** estática (matplotlib + networkx) e interactiva (pyvis → HTML).
 - **Backends**: PyTorch Geometric y DGL (vía adaptador; DGL requiere una versión
   de PyTorch con librerías precompiladas de graphbolt).
@@ -230,6 +237,39 @@ graph-explain bench --model model.pt --data data.pt --node 42 \
 Nota: `gea` solo está definida si el nodo pertenece a un subgrafo de ground
 truth del benchmark (BA-Shapes); para el resto aparece vacía en la tabla.
 
+## Graph-level (fase 10)
+
+Modelos que predicen sobre grafos enteros (`task_level = "graph"`, p. ej. GCN +
+pooling global). Sin `--node`, la CLI explica el grafo completo; los métodos
+mark by `graph_level`:
+
+```bash
+# Explicar un grafo completo (modelo graph-level) + GEA sobre el motivo
+graph-explain explain --model model.pt --data graph.pt \
+    --method grad_x_input --metrics fidelity_plus,gea
+
+# Bench graph-level (vs indica omitidos y solo ejecuta métodos aplicables)
+graph-explain bench --model model.pt --data graph.pt \
+    --methods all --no-stability --json bench_graph.json
+```
+
+En Python:
+
+```python
+from graph_explain import Explainer, evaluate_gea_graph
+from graph_explain.benchmarks.synthetic import build_graph_classification
+
+graphs = build_graph_classification(num_pos=8, num_neg=8, seed=0)  # y binario, gt_edge_mask
+model = ...  # GraphGCN (task_level="graph")
+
+expl = Explainer(algorithm=GradXInput()).explain_graph(graphs[0], model)
+print(evaluate_gea_graph(expl, data=graphs[0], top_k=13))
+```
+
+Los métodos node-only (`GraphLIME`, `NodeMask`, `Attention`, `GNNGatedLRP`,
+`Counterfactual`, `DeepLift`, `PGExplainer`, `SubgraphX`) se marcan como
+`skipped` en graph-level.
+
 ## Roadmap
 
 - [x] Fase 2: PGExplainer, SubgraphX, Integrated Gradients
@@ -243,6 +283,8 @@ truth del benchmark (BA-Shapes); para el resto aparece vacía en la tabla.
 - [x] Fase 6: más métodos (DeepLIFT rescale, Attention/GAT, Gradient×Input)
 - [x] Fase 7: benchmark comparativo (`compare` + subcomando CLI `bench`, tabla e informes JSON/HTML)
 - [x] Fase 8: más métodos (GraphLIME, NodeMask, GuidedBackprop y Random baseline)
+- [x] Fase 10: explicaciones graph-level (dataset de clasificación de grafos con
+  motivo house, GEA graph-level, CLI/bench sin `--node` y marcador `graph_level`)
 
 ## Licencia
 

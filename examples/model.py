@@ -54,3 +54,48 @@ def default_data_and_model(base_nodes: int = 300, num_houses: int = 40):
     )
     model = build_default_model(data.x.size(1))
     return data, model
+
+
+class GraphGCN(torch.nn.Module):
+    task_level = "graph"
+
+    def __init__(self, in_channels: int, hidden: int = 32, num_classes: int = 2):
+        super().__init__()
+        self.conv1 = GCNConv(in_channels, hidden, add_self_loops=False)
+        self.conv2 = GCNConv(hidden, hidden, add_self_loops=False)
+        self.lin = torch.nn.Linear(hidden, num_classes)
+
+    def forward(self, x, edge_index, batch=None, edge_weight=None):
+        from torch_geometric.nn import global_mean_pool
+
+        x = F.relu(self.conv1(x, edge_index, edge_weight=edge_weight))
+        x = self.conv2(x, edge_index, edge_weight=edge_weight)
+        if batch is None:
+            batch = torch.zeros(x.size(0), dtype=torch.long)
+        return self.lin(global_mean_pool(x, batch))
+
+
+def train_graph(model, graphs, epochs: int = 300, lr: float = 0.005) -> float:
+    from torch_geometric.nn import global_mean_pool
+
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    model.train()
+    for _ in range(epochs):
+        optimizer.zero_grad()
+        total = None
+        for g in graphs:
+            batch = torch.zeros(g.num_nodes, dtype=torch.long)
+            h = F.relu(model.conv1(g.x, g.edge_index))
+            h = model.conv2(h, g.edge_index)
+            out = model.lin(global_mean_pool(h, batch))
+            loss = F.cross_entropy(out, g.y)
+            total = loss if total is None else total + loss
+        total.backward()
+        optimizer.step()
+    model.eval()
+    correct = 0
+    with torch.no_grad():
+        for g in graphs:
+            pred = model(g.x, g.edge_index)
+            correct += int(pred.argmax(dim=-1).item() == g.y.item())
+    return correct / max(1, len(graphs))

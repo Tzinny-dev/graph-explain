@@ -108,7 +108,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     bench.add_argument("--model", required=True, help="Ruta al modelo guardado (.pt)")
     bench.add_argument("--data", required=True, help="Ruta al Data guardado (.pt)")
-    bench.add_argument("--node", type=int, required=True, help="Índice del nodo")
+    bench.add_argument(
+        "--node",
+        type=int,
+        default=None,
+        help="Índice del nodo (node-level); omitir para graph-level",
+    )
     bench.add_argument("--target-class", type=int, default=None)
     bench.add_argument(
         "--methods",
@@ -195,6 +200,12 @@ def _eval_metric(name: str, args, model, data, explanation) -> float | None:
         if name == "fidelity_minus":
             return float(evaluate_fidelity_minus(model, explanation))
         if name == "gea":
+            if getattr(model, "task_level", "node") == "graph":
+                from graph_explain.core.evaluation import evaluate_gea_graph
+
+                return float(
+                    evaluate_gea_graph(explanation, data=data, top_k=args.top_k)
+                )
             return float(evaluate_gea(explanation, data=data, top_k=args.top_k))
         if name == "stability":
             if args.node is None:
@@ -223,16 +234,29 @@ def _cmd_explain(args: argparse.Namespace) -> int:
 
     from graph_explain.core.registry import get_algorithm
 
-    if args.node is None:
-        print(
-            "Para explicar es necesario indicar --node (explicación por nodo).",
-            file=sys.stderr,
-        )
-        return 2
-
     model = torch.load(args.model, map_location="cpu", weights_only=False)
     data = torch.load(args.data, map_location="cpu", weights_only=False)
     model.eval()
+
+    task = getattr(model, "task_level", "node")
+    if args.node is None:
+        if task == "graph":
+            if not get_algorithm(args.method).graph_level:
+                print(
+                    f"Error: {args.method} no soporta explicación graph-level "
+                    "(solo node-level).",
+                    file=sys.stderr,
+                )
+                return 2
+            index = None
+        else:
+            print(
+                "Para explicar es necesario indicar --node (explicación por nodo).",
+                file=sys.stderr,
+            )
+            return 2
+    else:
+        index = args.node
 
     algorithm = _instantiate(args.method, args)
     explainer = _make_explainer(args)
@@ -240,7 +264,7 @@ def _cmd_explain(args: argparse.Namespace) -> int:
         explanation = explainer.explain(
             data,
             model,
-            index=args.node,
+            index=index,
             target_class=args.target_class,
         )
     except ValueError as exc:
@@ -318,6 +342,13 @@ def _cmd_bench(args: argparse.Namespace) -> int:
     data = torch.load(args.data, map_location="cpu", weights_only=False)
     model.eval()
 
+    task = getattr(model, "task_level", "node")
+    if args.node is None and task != "graph":
+        print(
+            "Para node-level es necesario indicar --node.", file=sys.stderr
+        )
+        return 2
+
     if args.methods.strip().lower() == "all":
         methods = list(DEFAULT_METHODS)
     else:
@@ -332,9 +363,11 @@ def _cmd_bench(args: argparse.Namespace) -> int:
                 print(f"Error: {exc}", file=sys.stderr)
                 return 2
 
+    methods = list(dict.fromkeys(methods))
+
     print(
-        f"Benchmark sobre nodo {args.node} ({len(methods)} métodos) - "
-        f"backend {args.backend}\n"
+        f"Benchmark {'sobre nodo ' + str(args.node) if args.node is not None else 'graph-level'}"
+        f" ({len(methods)} métodos) - backend {args.backend}\n"
     )
     results = compare(
         data,

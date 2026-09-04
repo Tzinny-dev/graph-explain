@@ -2,6 +2,17 @@
 
 Todas las versiones notables de `graph-explain`.
 
+## [0.7.0] - 2026-09-04
+
+### Fase 10: graph-level
+- Dataset sintético de clasificación de grafos `build_graph_classification`
+  (motivo house, `y` binario, `gt_edge_mask`/`gt_nodes` por grafo).
+- `evaluate_gea_graph`: GEA graph-level sobre las aristas del motivo.
+- `explain_graph` en CLI y `bench` sin `--node` para modelos `task_level =
+  "graph"`; atributo `graph_level` por método (node-only se marca `skipped`).
+- Modelo y entrenamiento graph-level de ejemplo (`GraphGCN`, `train_graph`).
+- `Saliency` e `IntegratedGradients` aceptan `index=None` (graph-level).
+
 ## [0.6.0] - 2026-09-04
 
 ### Fase 8: más métodos

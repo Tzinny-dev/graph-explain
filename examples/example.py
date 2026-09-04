@@ -113,6 +113,44 @@ def main():
         title=f"GNNExplainer (nodo {anchor}, clase 2)",
     )
 
+    graph_example(output_dir)
+
+
+def graph_example(output_dir: str):
+    """Explicación graph-level: clasificación de grafos con motivo house."""
+    try:
+        from examples.model import GraphGCN, train_graph
+    except ImportError:
+        from model import GraphGCN, train_graph
+
+    from graph_explain import evaluate_gea_graph
+    from graph_explain.benchmarks.synthetic import build_graph_classification
+    from graph_explain.core.registry import instantiate
+
+    graphs = build_graph_classification(num_pos=8, num_neg=8, seed=0)
+    model = GraphGCN(graphs[0].x.size(1))
+    acc = train_graph(model, graphs, epochs=200)
+    print(f"\n[Graph-level] accuracy: {acc:.2f}")
+
+    positive = graphs[0]
+    for name, algo in (
+        ("Saliency", instantiate("saliency")),
+        ("GradXInput", instantiate("grad_x_input")),
+        ("Random", instantiate("random", seed=0)),
+    ):
+        expl = Explainer(algorithm=algo).explain_graph(positive, model)
+        gea = None
+        if expl.edge_importance is not None:
+            try:
+                gea = evaluate_gea_graph(expl, data=positive, top_k=13)
+            except ValueError:
+                gea = None
+        print(
+            f"{name:12s} grafo -> nodos {expl.node_importance.shape[0]}, "
+            f"aristas {expl.edge_importance.shape[0] if expl.edge_importance is not None else '-'}, "
+            f"GEA(graph)={gea if gea is None else f'{gea:.3f}'}"
+        )
+
 
 if __name__ == "__main__":
     main()

@@ -114,6 +114,100 @@ def build_data(
     )
 
 
+def build_graph_classification(
+    num_pos: int = 20,
+    num_neg: int = 20,
+    base_nodes_range: tuple[int, int] = (15, 30),
+    m: int = 2,
+    seed: int = 0,
+    num_features: int = 8,
+    feature_style: str = "random",
+):
+    """Conjunto de clasificación de grafos con motivo 'house' conocido.
+
+    Devuelve una lista de `Data` graph-level con etiqueta binaria `y` (1 si el
+    grafo contiene el motivo house). Cada grafo lleva `gt_edge_mask` (bool sobre
+    las aristas dirigidas, incluye ambas direcciones) y `gt_nodes` con los nodos
+    del motivo (+ ancla).
+    """
+    from torch_geometric.data import Data
+
+    rng = np.random.default_rng(seed)
+    graphs: list[Data] = []
+    for cls in (1, 0):
+        count = num_pos if cls == 1 else num_neg
+        for _ in range(count):
+            base = int(
+                rng.integers(base_nodes_range[0], base_nodes_range[1] + 1)
+            )
+            tree_seed = int(rng.integers(0, 2**31 - 1))
+            g = nx.barabasi_albert_graph(base, m, seed=tree_seed)
+            g = g.to_undirected()
+
+            gt_nodes: list[int] = []
+            gt_edges: list[tuple[int, int]] = []
+            if cls == 1:
+                offset = g.number_of_nodes()
+                anchor = int(rng.integers(0, base))
+                edges_m, _ = _house_motif(offset)
+                g.add_nodes_from(range(offset, offset + 5))
+                g.add_edges_from(edges_m)
+                g.add_edge(anchor, offset + 3)
+                gt_nodes = list(range(offset, offset + 5)) + [anchor]
+                gt_edges = list(edges_m) + [(anchor, offset + 3)]
+
+            if feature_style == "degree":
+                degrees = np.array([d for _, d in g.degree()], dtype=np.float64)
+                feat_dim = max(int(degrees.max()) + 1, num_features)
+                x = np.zeros((g.number_of_nodes(), feat_dim), dtype=np.float32)
+                x[
+                    np.arange(g.number_of_nodes()),
+                    np.minimum(degrees.astype(np.int64), feat_dim - 1),
+                ] = 1.0
+            else:
+                x = rng.normal(
+                    0.0,
+                    1.0,
+                    size=(g.number_of_nodes(), num_features),
+                ).astype(np.float32)
+
+            edge_index = torch.tensor(
+                np.array(g.edges(), dtype=np.int64).T, dtype=torch.long
+            )
+            edge_index = torch.cat([edge_index, edge_index.flip(0)], dim=1)
+
+            gt_pairs = set(gt_edges) | {(v, u) for u, v in gt_edges}
+            gt_edge_mask = torch.zeros(
+                edge_index.size(1), dtype=torch.bool
+            )
+            if cls == 1:
+                for i, (s, d) in enumerate(
+                    zip(edge_index[0].tolist(), edge_index[1].tolist())
+                ):
+                    if (s, d) in gt_pairs:
+                        gt_edge_mask[i] = True
+
+            graphs.append(
+                Data(
+                    x=torch.from_numpy(x),
+                    edge_index=edge_index,
+                    y=torch.tensor([cls], dtype=torch.long),
+                    num_nodes=g.number_of_nodes(),
+                    gt_edge_mask=gt_edge_mask,
+                    gt_nodes=sorted(gt_nodes),
+                )
+            )
+    return graphs
+
+
+def ground_truth_edges_graph(data) -> list[int]:
+    """Índices (dirigidos) de las aristas del motivo para un grafo del dataset."""
+    mask = getattr(data, "gt_edge_mask", None)
+    if mask is None:
+        return []
+    return mask.nonzero(as_tuple=False).flatten().tolist()
+
+
 HOUSE_SIZE = 5
 
 

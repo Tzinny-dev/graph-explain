@@ -341,6 +341,37 @@ def _local_scope(explanation, hops: int) -> tuple[list[int], list[int]]:
     return nodes, edge_ids
 
 
+def evaluate_gea_graph(
+    explanation,
+    data=None,
+    gt_edge_ids: list[int] | None = None,
+    top_k: int | None = None,
+) -> float:
+    """Graph Explanation Accuracy (graph-level): solape de los top-k edges de la
+    explicación con las aristas del motivo conocidas del dataset
+    (`gt_edge_mask`) del grafo explicado."""
+    if gt_edge_ids is None:
+        if data is None:
+            data = explanation.metadata.get("backing_data")
+        if data is not None:
+            from ..benchmarks.synthetic import ground_truth_edges_graph
+
+            gt_edge_ids = ground_truth_edges_graph(data)
+    if not gt_edge_ids:
+        raise ValueError(
+            "evaluate_gea_graph no tiene ground truth de aristas para este grafo."
+        )
+    if explanation.edge_importance is None:
+        raise ValueError("evaluate_gea_graph necesita edge_importance.")
+    imp = explanation.edge_importance.detach().reshape(-1)
+    k = top_k if top_k is not None else len(gt_edge_ids)
+    k = int(max(0, min(k, imp.shape[0])))
+    if k == 0:
+        return 0.0
+    top = set(imp.argsort(descending=True)[:k].tolist())
+    return float(len(top & set(gt_edge_ids)) / max(1, k))
+
+
 def _prob(pred, class_idx, softmax: bool = False):
     import torch
 

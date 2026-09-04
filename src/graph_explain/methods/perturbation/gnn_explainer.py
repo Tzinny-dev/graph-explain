@@ -12,6 +12,8 @@ from ..base import ExplanationAlgorithm
 
 @register("gnn_explainer", "gnnexplainer")
 class GNNExplainer(ExplanationAlgorithm):
+    graph_level = True
+
     def __init__(
         self,
         epochs: int = 200,
