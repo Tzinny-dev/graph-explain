@@ -22,6 +22,10 @@ DEFAULT_METHODS = [
     "gnn_lrp",
     "deep_lift",
     "grad_x_input",
+    "graph_lime",
+    "node_mask",
+    "guided_backprop",
+    "random",
     "counterfactual",
     "attention",
 ]

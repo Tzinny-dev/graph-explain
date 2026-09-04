@@ -23,6 +23,15 @@ importantes**, con métricas de evaluación y visualización integradas.
 - `AttentionExplainer` — importancia de nodos/aristas a partir de los pesos de
   atención de un modelo `GATConv` (softmax por vecino, media sobre cabezas y capas).
 - `GradXInput` — gradiente × activación (baseline zero) para nodos y aristas.
+- `GraphLIME` — regresión lineal local (ridge) sobre las features de los vecinos
+  k-hop, ponderada por similaridad con el nodo objetivo; da importancia de
+  features directamente interpretable sin entrenamiento.
+- `NodeMask` — máscara de nodos aprendida por optimización (siguen la
+  predicción) sobre el subgrafo k-hop, regularizada a esparcidad.
+- `GuidedBackprop` — gradientes guiados por la máscara ReLU (solo activaciones
+  positivas); cae a gradiente estándar si el modelo usa ReLU funcionales.
+- `Random` — línea base de importancia uniforme aleatoria (seed-able) para
+  benchmarks.
 - `Counterfactual` — perturbación mínima (aristas o features) que cambia la
   predicción de un nodo (búsqueda greedy determinista); devuelve los elementos
   modificados como importancia y los logits tras el cambio.
@@ -233,6 +242,7 @@ truth del benchmark (BA-Shapes); para el resto aparece vacía en la tabla.
 - [x] Fase 5: CLI completa (todos los métodos, métricas, narración y export JSON)
 - [x] Fase 6: más métodos (DeepLIFT rescale, Attention/GAT, Gradient×Input)
 - [x] Fase 7: benchmark comparativo (`compare` + subcomando CLI `bench`, tabla e informes JSON/HTML)
+- [x] Fase 8: más métodos (GraphLIME, NodeMask, GuidedBackprop y Random baseline)
 
 ## Licencia
 
