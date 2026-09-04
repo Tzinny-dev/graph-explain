@@ -45,7 +45,6 @@ class Explanation:
         G = nx.Graph()
         keep_edges = []
         if self.edge_importance is not None:
-
             edge_index = backend.edge_index(data)
             for e in range(self.edge_importance.shape[0]):
                 if float(self.edge_importance[e]) >= threshold:

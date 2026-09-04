@@ -73,7 +73,15 @@ class Counterfactual(ExplanationAlgorithm):
         device = x.device
         if self.mode == "edge":
             edge_importance, final_logits = self._flip_edges(
-                backend, model, x, edge_index, edge_weight, node, orig_class, target_new, device
+                backend,
+                model,
+                x,
+                edge_index,
+                edge_weight,
+                node,
+                orig_class,
+                target_new,
+                device,
             )
             return self._build(
                 backend,
@@ -95,7 +103,15 @@ class Counterfactual(ExplanationAlgorithm):
                 feature_importance=None,
             )
         feature_importance, _final_x, final_logits = self._flip_features(
-            backend, model, x, edge_index, edge_weight, node, orig_class, target_new, device
+            backend,
+            model,
+            x,
+            edge_index,
+            edge_weight,
+            node,
+            orig_class,
+            target_new,
+            device,
         )
         return self._build(
             backend,
@@ -112,7 +128,18 @@ class Counterfactual(ExplanationAlgorithm):
         )
 
     # ------------------------------------------------------------------ búsquedas
-    def _flip_edges(self, backend, model, x, edge_index, edge_weight, node, orig_class, target_new, device):
+    def _flip_edges(
+        self,
+        backend,
+        model,
+        x,
+        edge_index,
+        edge_weight,
+        node,
+        orig_class,
+        target_new,
+        device,
+    ):
         num_nodes = int(x.size(0))
         weight = (
             edge_weight.detach().clone()
@@ -142,7 +169,10 @@ class Counterfactual(ExplanationAlgorithm):
                     p = float(_softmax(lg, orig_class))
                     if best_p is None or p < best_p:
                         best_e, best_logits, best_p = e, lg, p
-            if best_e is None or (best_p is not None and best_p >= float(_softmax(pred, orig_class)) - self.eps):
+            if best_e is None or (
+                best_p is not None
+                and best_p >= float(_softmax(pred, orig_class)) - self.eps
+            ):
                 break
             removed.append(best_e)
             weight[best_e] = 0.0
@@ -152,7 +182,18 @@ class Counterfactual(ExplanationAlgorithm):
         importance[removed] = 1.0
         return importance, pred.detach()
 
-    def _flip_features(self, backend, model, x, edge_index, edge_weight, node, orig_class, target_new, device):
+    def _flip_features(
+        self,
+        backend,
+        model,
+        x,
+        edge_index,
+        edge_weight,
+        node,
+        orig_class,
+        target_new,
+        device,
+    ):
         baseline = x.mean(dim=0, keepdim=True)
         x_cur = x.detach().clone()
         changed: list[int] = []
@@ -172,11 +213,16 @@ class Counterfactual(ExplanationAlgorithm):
                         continue
                     xn = x_cur.clone()
                     xn[node, c] = baseline[0, c]
-                    lg = backend.forward(model, xn, edge_index, edge_weight=edge_weight)[node]
+                    lg = backend.forward(
+                        model, xn, edge_index, edge_weight=edge_weight
+                    )[node]
                     p = float(_softmax(lg, orig_class))
                     if best_p is None or p < best_p:
                         best_c, best_logits, best_p = c, lg, p
-            if best_c is None or (best_p is not None and best_p >= float(_softmax(pred, orig_class)) - self.eps):
+            if best_c is None or (
+                best_p is not None
+                and best_p >= float(_softmax(pred, orig_class)) - self.eps
+            ):
                 break
             changed.append(best_c)
             x_cur[node, best_c] = baseline[0, best_c]
@@ -219,7 +265,18 @@ class Counterfactual(ExplanationAlgorithm):
                 edges.append(e)
         return edges
 
-    def _build(self, backend, data, node, orig_class, orig_logits, final_logits, node_importance, edge_importance, feature_importance) -> Explanation:
+    def _build(
+        self,
+        backend,
+        data,
+        node,
+        orig_class,
+        orig_logits,
+        final_logits,
+        node_importance,
+        edge_importance,
+        feature_importance,
+    ) -> Explanation:
         metadata = {
             "backend": backend,
             "backing_data": data,
@@ -228,7 +285,9 @@ class Counterfactual(ExplanationAlgorithm):
         }
         return Explanation(
             node_importance=node_importance.detach().cpu(),
-            edge_importance=edge_importance.detach().cpu() if edge_importance is not None else None,
+            edge_importance=edge_importance.detach().cpu()
+            if edge_importance is not None
+            else None,
             feature_importance=(
                 feature_importance.detach().cpu()
                 if feature_importance is not None
@@ -237,7 +296,9 @@ class Counterfactual(ExplanationAlgorithm):
             prediction_original=orig_logits[node].detach().cpu(),
             prediction_explanation=final_logits.detach().cpu(),
             node_idx=node,
-            target_class=int(final_logits.argmax().item()) if final_logits.numel() else None,
+            target_class=int(final_logits.argmax().item())
+            if final_logits.numel()
+            else None,
             metadata=metadata,
             mask_threshold=0.5,
         )

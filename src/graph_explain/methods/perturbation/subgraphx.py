@@ -84,7 +84,15 @@ class SubgraphX(ExplanationAlgorithm):
 
         selected = set(best_state)
         selected = self._grow_if_unfaithful(
-            backend, model, x, edge_index, ni, target_class, selected, candidates, baseline
+            backend,
+            model,
+            x,
+            edge_index,
+            ni,
+            target_class,
+            selected,
+            candidates,
+            baseline,
         )
         if self.prune:
             selected = self._prune(
@@ -92,13 +100,13 @@ class SubgraphX(ExplanationAlgorithm):
             )
 
         edge_mask = self._edge_mask(edge_index, selected, num_nodes, device)
-        node_importance = self._node_importance(
-            edge_index, selected, num_nodes, device
-        )
+        node_importance = self._node_importance(edge_index, selected, num_nodes, device)
 
         with torch.no_grad():
             x_eff = self._masked_features(x, selected, baseline)
-            pred_masked = backend.forward(model, x_eff, edge_index, edge_weight=edge_mask)
+            pred_masked = backend.forward(
+                model, x_eff, edge_index, edge_weight=edge_mask
+            )
             pred_node = (
                 pred_masked[ni] if pred_masked.dim() == 2 else pred_masked.unsqueeze(0)
             )
@@ -118,9 +126,7 @@ class SubgraphX(ExplanationAlgorithm):
             metadata={"selected": sorted(selected)},
         )
 
-    def _neighborhood(
-        self, edge_index, num_nodes, node, hops, max_nodes
-    ) -> list[int]:
+    def _neighborhood(self, edge_index, num_nodes, node, hops, max_nodes) -> list[int]:
         visited = {node}
         frontier = {node}
         for _ in range(hops):
@@ -137,7 +143,9 @@ class SubgraphX(ExplanationAlgorithm):
             ordered = sorted(gated)
         return ordered
 
-    def _mcts(self, backend, model, x, edge_index, node, candidates, target_class, baseline):
+    def _mcts(
+        self, backend, model, x, edge_index, node, candidates, target_class, baseline
+    ):
         root_state = (node,)
         root = MCTSNode(root_state)
         for _ in range(self.rollout):
@@ -178,7 +186,9 @@ class SubgraphX(ExplanationAlgorithm):
             path.append(current)
         return current, path
 
-    def _evaluate(self, backend, model, x, edge_index, state, node, target_class, baseline):
+    def _evaluate(
+        self, backend, model, x, edge_index, state, node, target_class, baseline
+    ):
         selected = set(state)
         if len(selected) == 0:
             return -1e6
@@ -198,7 +208,16 @@ class SubgraphX(ExplanationAlgorithm):
         return logp - self.lambda_connect * (components - 1) - size_penalty
 
     def _grow_if_unfaithful(
-        self, backend, model, x, edge_index, node, target_class, selected, candidates, baseline
+        self,
+        backend,
+        model,
+        x,
+        edge_index,
+        node,
+        target_class,
+        selected,
+        candidates,
+        baseline,
     ):
         selected = set(selected)
         if not self._preserves_class(
@@ -213,7 +232,9 @@ class SubgraphX(ExplanationAlgorithm):
                     weight = self._edge_mask(edge_index, trial, x.size(0), x.device)
                     x_eff = self._masked_features(x, trial, baseline)
                     with torch.no_grad():
-                        pred = backend.forward(model, x_eff, edge_index, edge_weight=weight)
+                        pred = backend.forward(
+                            model, x_eff, edge_index, edge_weight=weight
+                        )
                     if pred.dim() != 2:
                         continue
                     r = pred[node].log_softmax(-1)[target_class].item()
@@ -227,7 +248,14 @@ class SubgraphX(ExplanationAlgorithm):
                 remaining.remove(best)
                 added.add(best)
                 if self._preserves_class(
-                    backend, model, x, edge_index, node, target_class, selected, baseline
+                    backend,
+                    model,
+                    x,
+                    edge_index,
+                    node,
+                    target_class,
+                    selected,
+                    baseline,
                 ):
                     break
         return selected
@@ -243,7 +271,10 @@ class SubgraphX(ExplanationAlgorithm):
             pred = backend.forward(model, x_eff, edge_index, edge_weight=weight)
         if pred.dim() != 2:
             return True
-        return not (node >= pred.size(0)) and int(pred[node].argmax().item()) == target_class
+        return (
+            not (node >= pred.size(0))
+            and int(pred[node].argmax().item()) == target_class
+        )
 
     @staticmethod
     def _masked_features(x, selected, baseline):
@@ -251,7 +282,9 @@ class SubgraphX(ExplanationAlgorithm):
         sel[list(selected)] = True
         return baseline + (x - baseline) * sel.unsqueeze(-1)
 
-    def _prune(self, backend, model, x, edge_index, node, target_class, selected, baseline):
+    def _prune(
+        self, backend, model, x, edge_index, node, target_class, selected, baseline
+    ):
         selected = set(selected)
         weight = self._edge_mask(edge_index, selected, x.size(0), x.device)
         x_eff = self._masked_features(x, selected, baseline)
@@ -273,7 +306,9 @@ class SubgraphX(ExplanationAlgorithm):
                 t_weight = self._edge_mask(edge_index, trial, x.size(0), x.device)
                 t_x = self._masked_features(x, trial, baseline)
                 with torch.no_grad():
-                    t_pred = backend.forward(model, t_x, edge_index, edge_weight=t_weight)
+                    t_pred = backend.forward(
+                        model, t_x, edge_index, edge_weight=t_weight
+                    )
                 if int(t_pred[node].argmax().item()) == target_class:
                     keep = list(trial)
         return set(keep)
@@ -317,9 +352,9 @@ class SubgraphX(ExplanationAlgorithm):
     def _edge_mask(edge_index, selected, num_nodes, device):
         src = edge_index[0]
         dst = edge_index[1]
-        both = torch.isin(src, torch.as_tensor(list(selected), device=device)) & torch.isin(
-            dst, torch.as_tensor(list(selected), device=device)
-        )
+        both = torch.isin(
+            src, torch.as_tensor(list(selected), device=device)
+        ) & torch.isin(dst, torch.as_tensor(list(selected), device=device))
         return both.to(torch.float32)
 
     @staticmethod

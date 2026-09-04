@@ -113,8 +113,7 @@ def build_parser() -> argparse.ArgumentParser:
     bench.add_argument(
         "--methods",
         default="all",
-        help="Métodos separados por comas (o 'all'). Aliases: "
-        f"{', '.join(_METHODS)}",
+        help=f"Métodos separados por comas (o 'all'). Aliases: {', '.join(_METHODS)}",
     )
     bench.add_argument("--backend", default="pyg", choices=["pyg", "dgl"])
     bench.add_argument("--epochs", type=int, default=200)
@@ -377,9 +376,7 @@ def _cmd_bench(args: argparse.Namespace) -> int:
 
     widths[0] = max(widths[0], max((len(r[0]) for r in rows), default=0))
     for i in range(1, len(headers)):
-        widths[i] = max(
-            widths[i], max((len(r[i]) for r in rows if r[i]), default=0)
-        )
+        widths[i] = max(widths[i], max((len(r[i]) for r in rows if r[i]), default=0))
 
     for i, h in enumerate(headers):
         widths[i] = max(widths[i], len(h))
@@ -396,7 +393,9 @@ def _cmd_bench(args: argparse.Namespace) -> int:
             print(f"  {name}: {reason}")
 
     if args.json:
-        out = {name: entry for name, entry in results.items() if not name.startswith("_")}
+        out = {
+            name: entry for name, entry in results.items() if not name.startswith("_")
+        }
         out["_meta"] = results["_meta"]
         out["_meta"]["version"] = __version__
         with open(args.json, "w", encoding="utf-8") as fh:

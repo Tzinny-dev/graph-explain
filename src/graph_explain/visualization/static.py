@@ -38,12 +38,21 @@ def visualize_static(
         others = [n for n in G.nodes() if n != target]
         if others:
             nx.draw_networkx_nodes(
-                G, pos, nodelist=others, node_size=node_size,
-                node_color="#aaddff", ax=ax, node_shape="o",
+                G,
+                pos,
+                nodelist=others,
+                node_size=node_size,
+                node_color="#aaddff",
+                ax=ax,
+                node_shape="o",
             )
         nx.draw_networkx_nodes(
-            G, pos, nodelist=[target], node_size=node_size * 1.4,
-            node_color="#d62728", ax=ax,
+            G,
+            pos,
+            nodelist=[target],
+            node_size=node_size * 1.4,
+            node_color="#d62728",
+            ax=ax,
         )
     else:
         nx.draw_networkx_nodes(G, pos, node_size=node_size, node_color="#aaddff", ax=ax)
@@ -58,8 +67,13 @@ def visualize_static(
                 t = (w - vmin) / span
                 width = 0.5 + 4.0 * t
                 nx.draw_networkx_edges(
-                    G, pos, edgelist=[(u, v)], width=width,
-                    edge_color=cmap_obj(t), ax=ax, alpha=0.9,
+                    G,
+                    pos,
+                    edgelist=[(u, v)],
+                    width=width,
+                    edge_color=cmap_obj(t),
+                    ax=ax,
+                    alpha=0.9,
                 )
 
     if show_labels:

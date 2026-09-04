@@ -68,7 +68,9 @@ class GuidedBackprop(ExplanationAlgorithm):
             score = out[root, target]
             model.zero_grad()
             score.backward()
-            grad = x_in.grad.detach() if x_in.grad is not None else torch.zeros_like(x_in)
+            grad = (
+                x_in.grad.detach() if x_in.grad is not None else torch.zeros_like(x_in)
+            )
         finally:
             for hook in hooks:
                 hook.remove()

@@ -82,9 +82,7 @@ class NodeMask(ExplanationAlgorithm):
         for _ in range(self.epochs):
             optimizer.zero_grad()
             node_mask = torch.sigmoid(mask)
-            pred = backend.forward(
-                model, x_sub, sub_edge_index, node_mask=node_mask
-            )
+            pred = backend.forward(model, x_sub, sub_edge_index, node_mask=node_mask)
             topk = node_mask.topk(max(k, 1)).values.min()
             loss = self._loss(pred, ni, target, node_mask, topk)
             loss.backward()
@@ -95,7 +93,9 @@ class NodeMask(ExplanationAlgorithm):
         full[sub_nodes.cpu()] = final.cpu()
 
         with torch.no_grad():
-            pred_masked = backend.forward(model, x_sub, sub_edge_index, node_mask=final)[ni]
+            pred_masked = backend.forward(
+                model, x_sub, sub_edge_index, node_mask=final
+            )[ni]
 
         return Explanation(
             node_importance=full,

@@ -31,9 +31,7 @@ def visualize_interactive(
         filter_menu=False,
     )
 
-    edge_weights = {
-        (u, v): float(w) for u, v, w in G.edges(data="weight", default=0.0)
-    }
+    edge_weights = {(u, v): float(w) for u, v, w in G.edges(data="weight", default=0.0)}
     max_w = max(edge_weights.values(), default=0.0) or 1.0
 
     node_imp = {}
@@ -57,7 +55,9 @@ def visualize_interactive(
     for (u, v), w in edge_weights.items():
         width = 1 + 8 * (w / max_w)
         color = f"rgba(200, 40, 40, {0.3 + 0.7 * w / max_w})"
-        net.add_edge(int(u), int(v), value=w, width=width, color=color, title=f"peso: {w:.3f}")
+        net.add_edge(
+            int(u), int(v), value=w, width=width, color=color, title=f"peso: {w:.3f}"
+        )
 
     net.write_html(output_path, open_browser=False, notebook=False)
     return output_path

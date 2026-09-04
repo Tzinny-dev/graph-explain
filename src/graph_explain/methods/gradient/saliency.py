@@ -70,12 +70,16 @@ class Saliency(ExplanationAlgorithm):
             raise ValueError(f"aggregate desconocido: {self.aggregate}")
 
         prediction_original = logits[idx].detach()
-        feature_importance = grad.detach() if self.node_mask_type == "attributes" else None
+        feature_importance = (
+            grad.detach() if self.node_mask_type == "attributes" else None
+        )
 
         return Explanation(
             node_importance=node_importance.detach().cpu(),
             feature_importance=(
-                feature_importance.detach().cpu() if feature_importance is not None else None
+                feature_importance.detach().cpu()
+                if feature_importance is not None
+                else None
             ),
             edge_importance=None,
             prediction_original=prediction_original.cpu(),

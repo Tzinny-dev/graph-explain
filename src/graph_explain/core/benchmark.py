@@ -123,9 +123,7 @@ def compare(
         )
         torch.manual_seed(seed)
         try:
-            expl = explainer.explain_node(
-                data, model, node, target_class=target_class
-            )
+            expl = explainer.explain_node(data, model, node, target_class=target_class)
         except (ValueError, TypeError) as exc:
             entry["skipped"] = str(exc)
             results[name] = entry
@@ -145,19 +143,16 @@ def compare(
             lambda expl=expl_arg: float(evaluate_fidelity_minus(model, expl))
         )
         m["gea"] = _safe(
-            lambda expl=expl_arg: float(
-                evaluate_gea(expl, data=data, top_k=top_k)
-            )
+            lambda expl=expl_arg: float(evaluate_gea(expl, data=data, top_k=top_k))
         )
         m["sparsity"] = _safe(lambda expl=expl_arg: float(evaluate_sparsity(expl)))
         m["sparsity_local"] = _safe(
             lambda expl=expl_arg: float(evaluate_sparsity(expl, local=True))
         )
         if stability:
+
             def _again(d, name=name):
-                algo_r = instantiate(
-                    name, **_method_kwargs(epochs, lr, seed, top_k)
-                )
+                algo_r = instantiate(name, **_method_kwargs(epochs, lr, seed, top_k))
                 return Explainer(
                     algorithm=algo_r,
                     backend=backend_obj,
@@ -208,7 +203,9 @@ def report_html(results: dict, output_path: str) -> None:
             f"<td>{'-' if m[k] is None else f'{m[k]:.4f}'}</td>"
             for k in ("fidelity_plus", "fidelity_minus", "gea", "sparsity", "stability")
         )
-        rows.append(f"<tr><td>{name} <small>({entry['class']})</small></td>{cells}</tr>")
+        rows.append(
+            f"<tr><td>{name} <small>({entry['class']})</small></td>{cells}</tr>"
+        )
 
     body = "\n".join(rows)
     html = f"""<!doctype html>
@@ -230,8 +227,8 @@ def report_html(results: dict, output_path: str) -> None:
 <body>
 <h1>Benchmark comparativo de explicaciones</h1>
 <p class="meta">
-  nodo <code>{meta['node']}</code> &middot; clase objetivo
-  <code>{meta['target_class']}</code> &middot; backend <code>{meta['backend']}</code>
+  nodo <code>{meta["node"]}</code> &middot; clase objetivo
+  <code>{meta["target_class"]}</code> &middot; backend <code>{meta["backend"]}</code>
 </p>
 <table>
 <tr>

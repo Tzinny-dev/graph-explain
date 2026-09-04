@@ -1,20 +1,34 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=69", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "graph-explain"
-version = "0.5.0"
+version = "0.6.0"
 description = "Librería de explicabilidad para modelos basados en grafos (GNN)"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "graph-explain contributors" }]
-keywords = ["gnn", "explainability", "xai", "graph", "neural-networks"]
+keywords = [
+    "gnn",
+    "explainability",
+    "xai",
+    "graph",
+    "neural-networks",
+    "interpretability",
+]
 classifiers = [
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
 
 dependencies = [
@@ -28,7 +42,7 @@ pyg = ["torch>=2.0", "torch-geometric>=2.5"]
 dgl = ["torch>=2.0", "dgl>=2.0"]
 interactive = ["plotly>=5.15", "pyvis>=0.3"]
 all = ["torch>=2.0", "torch-geometric>=2.5", "plotly>=5.15", "pyvis>=0.3"]
-dev = ["pytest>=7.0"]
+dev = ["pytest>=7.0", "ruff>=0.5", "build>=1.0"]
 
 [project.scripts]
 graph-explain = "graph_explain.cli:main"
@@ -38,3 +52,7 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"

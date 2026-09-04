@@ -41,6 +41,4 @@ def edge_embeddings(
     embeddings: torch.Tensor,
     edge_index: torch.Tensor,
 ) -> torch.Tensor:
-    return torch.cat(
-        [embeddings[edge_index[0]], embeddings[edge_index[1]]], dim=-1
-    )
+    return torch.cat([embeddings[edge_index[0]], embeddings[edge_index[1]]], dim=-1)

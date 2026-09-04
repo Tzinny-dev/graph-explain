@@ -114,9 +114,7 @@ class GraphLIME(ExplanationAlgorithm):
         return beta[:-1].float()
 
     @staticmethod
-    def _khop_neighbors(
-        edge_index: torch.Tensor, node: int, hops: int
-    ) -> list[int]:
+    def _khop_neighbors(edge_index: torch.Tensor, node: int, hops: int) -> list[int]:
         adj: dict[int, set[int]] = defaultdict(set)
         src = edge_index[0].tolist()
         dst = edge_index[1].tolist()

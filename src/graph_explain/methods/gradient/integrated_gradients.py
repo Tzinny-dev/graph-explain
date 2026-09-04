@@ -52,13 +52,17 @@ class IntegratedGradients(ExplanationAlgorithm):
         ig_edge = None
         compute_edge = self.edge_grads and backend.supports_edge_weight(model)
         if compute_edge:
-            ig_edge = torch.zeros(edge_index.size(1), dtype=torch.float32, device=x.device)
+            ig_edge = torch.zeros(
+                edge_index.size(1), dtype=torch.float32, device=x.device
+            )
 
         for alpha, w in zip(alphas, weights):
             x_step = (baseline + alpha * (x - baseline)).requires_grad_(True)
             ew = None
             if compute_edge:
-                ew = (torch.ones(edge_index.size(1), device=x.device) * (1.0 - alpha)).requires_grad_(True)
+                ew = (
+                    torch.ones(edge_index.size(1), device=x.device) * (1.0 - alpha)
+                ).requires_grad_(True)
             out = backend.forward(model, x_step, edge_index, edge_weight=ew)
             if out.dim() == 2:
                 score = out[idx, target_class].sum()

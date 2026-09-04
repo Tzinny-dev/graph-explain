@@ -116,9 +116,7 @@ class PGExplainer(ExplanationAlgorithm):
             pred_masked[ni] if pred_masked.dim() == 2 else pred_masked.unsqueeze(0)
         )
 
-        node_importance = self._node_importance(
-            edge_mask, edge_index, num_nodes
-        )
+        node_importance = self._node_importance(edge_mask, edge_index, num_nodes)
 
         return Explanation(
             node_importance=node_importance,

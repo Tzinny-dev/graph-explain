@@ -62,7 +62,9 @@ class Explainer:
         target_class: int | None = None,
         **kwargs,
     ) -> Explanation:
-        return self.explain(data, model, index=node_idx, target_class=target_class, **kwargs)
+        return self.explain(
+            data, model, index=node_idx, target_class=target_class, **kwargs
+        )
 
     def explain_graph(
         self,
@@ -71,7 +73,11 @@ class Explainer:
         target_class: int | None = None,
         **kwargs,
     ) -> Explanation:
-        return self.explain(data, model, index=None, target_class=target_class, **kwargs)
+        return self.explain(
+            data, model, index=None, target_class=target_class, **kwargs
+        )
 
-    def __call__(self, data: Any, model: Any, index: int | list[int] | None = None, **kwargs):
+    def __call__(
+        self, data: Any, model: Any, index: int | list[int] | None = None, **kwargs
+    ):
         return self.explain(data, model, index=index, **kwargs)

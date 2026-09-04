@@ -72,9 +72,9 @@ class TestGraphLIME:
 class TestNodeMask:
     def test_node_only_shape_and_endpoint(self):
         data, model = _data_and_model()
-        expl = Explainer(algorithm=NodeMask(epochs=60), backend=PyGAdapter()).explain_node(
-            data, model, 0
-        )
+        expl = Explainer(
+            algorithm=NodeMask(epochs=60), backend=PyGAdapter()
+        ).explain_node(data, model, 0)
         assert expl.node_importance is not None
         assert expl.node_importance.shape == (data.num_nodes,)
         assert expl.edge_importance is None
@@ -87,9 +87,9 @@ class TestNodeMask:
         anchor = next(
             n for n in range(3, data.num_nodes) if ground_truth_nodes(data, n)
         )
-        expl = Explainer(algorithm=NodeMask(epochs=60), backend=PyGAdapter()).explain_node(
-            data, model, anchor
-        )
+        expl = Explainer(
+            algorithm=NodeMask(epochs=60), backend=PyGAdapter()
+        ).explain_node(data, model, anchor)
         gea = evaluate_gea(expl, data=data, top_k=5)
         assert 0.0 <= gea <= 1.0
 
@@ -129,12 +129,12 @@ class TestGuidedBackprop:
 class TestRandomBaseline:
     def test_deterministic_with_seed(self):
         data, model = _data_and_model()
-        a = Explainer(algorithm=RandomBaseline(seed=7), backend=PyGAdapter()).explain_node(
-            data, model, 0
-        )
-        b = Explainer(algorithm=RandomBaseline(seed=7), backend=PyGAdapter()).explain_node(
-            data, model, 0
-        )
+        a = Explainer(
+            algorithm=RandomBaseline(seed=7), backend=PyGAdapter()
+        ).explain_node(data, model, 0)
+        b = Explainer(
+            algorithm=RandomBaseline(seed=7), backend=PyGAdapter()
+        ).explain_node(data, model, 0)
         assert torch.equal(a.node_importance, b.node_importance)
         assert torch.equal(a.edge_importance, b.edge_importance)
         assert torch.equal(a.feature_importance, b.feature_importance)

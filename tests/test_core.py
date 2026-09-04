@@ -73,7 +73,9 @@ class TestExplain:
         GCN = make_model()
         model = GCN(data.x.size(1))
         node = int(data.house_anchors[0])
-        explainer = Explainer(algorithm=Saliency(), edge_mask_type=None, node_mask_type=None)
+        explainer = Explainer(
+            algorithm=Saliency(), edge_mask_type=None, node_mask_type=None
+        )
         expl = explainer.explain_node(data, model, node)
         assert expl.node_importance is not None
         assert expl.node_importance.shape[0] == data.num_nodes
@@ -91,7 +93,9 @@ class TestVisualization:
         data = build_data(base_nodes=60, num_houses=10, m=3, seed=0)
         GCN = make_model()
         model = GCN(data.x.size(1))
-        explainer = Explainer(algorithm=Saliency(), edge_mask_type=None, node_mask_type=None)
+        explainer = Explainer(
+            algorithm=Saliency(), edge_mask_type=None, node_mask_type=None
+        )
         expl = explainer.explain_node(data, model, int(data.house_anchors[0]))
         visualize_static(expl, threshold=0.5)
         fig = plt.gcf()

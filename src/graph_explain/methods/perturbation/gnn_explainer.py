@@ -103,7 +103,9 @@ class GNNExplainer(ExplanationAlgorithm):
         logits = backend.forward(model, x_sub, sub_edge_index)
 
         if sub_graph_level:
-            target_class = target_class or (int(logits.argmax(-1)[0].item()) if logits.dim() == 2 else 0)
+            target_class = target_class or (
+                int(logits.argmax(-1)[0].item()) if logits.dim() == 2 else 0
+            )
             ni = 0
             pred_orig = logits[0].detach()
             final_mask_node = None
@@ -113,7 +115,11 @@ class GNNExplainer(ExplanationAlgorithm):
             if edge_mask is not None:
                 final_mask_edge = torch.sigmoid(edge_mask)
             pred_masked = backend.forward(
-                model, x_sub, sub_edge_index, edge_weight=final_mask_edge, node_mask=final_mask_node
+                model,
+                x_sub,
+                sub_edge_index,
+                edge_weight=final_mask_edge,
+                node_mask=final_mask_node,
             )[0].detach()
         else:
             ni = int(mapping.item() if torch.is_tensor(mapping) else mapping)
@@ -127,7 +133,11 @@ class GNNExplainer(ExplanationAlgorithm):
             if edge_mask is not None:
                 final_mask_edge = torch.sigmoid(edge_mask)
             pred_masked = backend.forward(
-                model, x_sub, sub_edge_index, edge_weight=final_mask_edge, node_mask=final_mask_node
+                model,
+                x_sub,
+                sub_edge_index,
+                edge_weight=final_mask_edge,
+                node_mask=final_mask_node,
             )[ni].detach()
 
         full_num_nodes = num_nodes
@@ -142,7 +152,9 @@ class GNNExplainer(ExplanationAlgorithm):
             feature_importance=None,
             prediction_original=pred_orig.cpu(),
             prediction_explanation=pred_masked.cpu(),
-            node_idx=None if sub_graph_level else (int(index[0]) if torch.is_tensor(index) else int(index)),
+            node_idx=None
+            if sub_graph_level
+            else (int(index[0]) if torch.is_tensor(index) else int(index)),
             target_class=target_class,
             metadata={
                 "sub_nodes": sub_nodes,
@@ -195,15 +207,24 @@ class GNNExplainer(ExplanationAlgorithm):
             idx = torch.zeros(1, dtype=torch.long, device=pred.device)
             if target_class is None:
                 target_class = int(pred[0].argmax().item())
-            loss = F.nll_loss(log_logits[0].unsqueeze(0), torch.tensor([target_class], device=pred.device))
+            loss = F.nll_loss(
+                log_logits[0].unsqueeze(0),
+                torch.tensor([target_class], device=pred.device),
+            )
         else:
             if isinstance(node_idx, torch.Tensor) and node_idx.dim() == 0:
                 idx = node_idx.unsqueeze(0)
             else:
-                idx = torch.as_tensor([node_idx], device=pred.device) if not torch.is_tensor(node_idx) else node_idx.reshape(-1)
+                idx = (
+                    torch.as_tensor([node_idx], device=pred.device)
+                    if not torch.is_tensor(node_idx)
+                    else node_idx.reshape(-1)
+                )
             if target_class is None:
                 target_class = int(pred[idx].argmax(dim=-1)[0].item())
-            loss = F.nll_loss(log_logits[idx], torch.tensor([target_class], device=pred.device))
+            loss = F.nll_loss(
+                log_logits[idx], torch.tensor([target_class], device=pred.device)
+            )
 
         if edge_mask is not None and self.edge_entropy > 0:
             loss += self.edge_entropy * self._entropy(torch.sigmoid(edge_mask))
@@ -217,7 +238,11 @@ class GNNExplainer(ExplanationAlgorithm):
         return -(p * torch.log(p + eps) + (1 - p) * torch.log(1 - p + eps)).mean()
 
     def _extract_subgraph(
-        self, backend: Any, data: Any, index: int | torch.Tensor | None, edge_index: torch.Tensor
+        self,
+        backend: Any,
+        data: Any,
+        index: int | torch.Tensor | None,
+        edge_index: torch.Tensor,
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         from torch_geometric.utils import k_hop_subgraph
 
@@ -228,7 +253,11 @@ class GNNExplainer(ExplanationAlgorithm):
                 node_idx,
                 edge_index,
                 node_idx,
-                torch.ones(edge_index.size(1), dtype=torch.bool, device=edge_index.device),
+                torch.ones(
+                    edge_index.size(1), dtype=torch.bool, device=edge_index.device
+                ),
             )
         node_idx = torch.as_tensor([index], device=edge_index.device).reshape(-1)
-        return k_hop_subgraph(node_idx, num_hops=3, edge_index=edge_index, relabel_nodes=True)
+        return k_hop_subgraph(
+            node_idx, num_hops=3, edge_index=edge_index, relabel_nodes=True
+        )
