@@ -7,6 +7,7 @@ import torch
 
 from examples.model import default_data_and_model, train
 from graph_explain import (
+    Counterfactual,
     Explainer,
     GNNExplainer,
     GNNGatedLRP,
@@ -45,6 +46,7 @@ def main():
         ("PGExplainer", PGExplainer(epochs=120, lr=0.01)),
         ("SubgraphX", SubgraphX(rollout=20, num_hops=3, max_nodes=15)),
         ("GNN-LRP", GNNGatedLRP(normalize=True)),
+        ("Contrafactual", Counterfactual(mode="edge", max_steps=8, hops=2)),
         ("Saliency", Saliency()),
         ("IntegratedGradients", IntegratedGradients(steps=25)),
     ]

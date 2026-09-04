@@ -16,6 +16,9 @@ importantes**, con métricas de evaluación y visualización integradas.
 - `GNNGatedLRP` — propagación de relevancia por capas (LRP-0/z+) sobre GCNs;
   reparte la relevancia entre nodos y aristas según las contribuciones positivas
   de cada capa conv/lineal; soporta `GCNConv` + `ReLU` + `Linear`.
+- `Counterfactual` — perturbación mínima (aristas o features) que cambia la
+  predicción de un nodo (búsqueda greedy determinista); devuelve los elementos
+  modificados como importancia y los logits tras el cambio.
 - **Métricas**:
   - `evaluate_sparsity` — esparcidad global o local (`local=True`, sobre el subgrafo k-hop).
   - `evaluate_fidelity_plus` — **necesidad**: caída de `P(c)` al eliminar los top-k elementos.
@@ -141,7 +144,8 @@ Ejemplo en `examples/example.py`, benchmark con `num_houses=30`: GNNExplainer �
 - [x] Fase 3: métricas completas (fidelity±, stability, GEA)
 - [x] Fase 3: backend DGL (adaptador; validado con mock de la API dgl)
 - [~/] Fase 4: GNN-LRP (relevancia por capas para GCNs; valida el motivo house en BA-Shapes)
-- [ ] Fase 4: explicaciones contrafactuales, narración con LLM
+- [~/] Fase 4: explicaciones contrafactuales (mínima eliminación de aristas/features que cambia la clase)
+- [ ] Fase 4: narración con LLM
 
 ## Licencia
 

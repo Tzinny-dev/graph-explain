@@ -1,4 +1,5 @@
 from .base import ExplanationAlgorithm
+from .counterfactual.counterfactual import Counterfactual
 from .gradient.integrated_gradients import IntegratedGradients
 from .gradient.saliency import Saliency
 from .perturbation.gnn_explainer import GNNExplainer
@@ -7,6 +8,7 @@ from .perturbation.subgraphx import SubgraphX
 from .relevance.gnn_lrp import GNNGatedLRP
 
 __all__ = [
+    "Counterfactual",
     "ExplanationAlgorithm",
     "GNNExplainer",
     "GNNGatedLRP",

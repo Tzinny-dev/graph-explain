@@ -8,6 +8,7 @@ from .core.evaluation import (
     evaluate_stability,
 )
 from .methods import (
+    Counterfactual,
     GNNExplainer,
     GNNGatedLRP,
     IntegratedGradients,
@@ -20,6 +21,7 @@ from .visualization import show, visualize_interactive, visualize_static
 __version__ = "0.3.0"
 
 __all__ = [
+    "Counterfactual",
     "DGLAdapter",
     "Explainer",
     "Explanation",
