@@ -9,6 +9,7 @@ from .core.evaluation import (
 )
 from .methods import (
     GNNExplainer,
+    GNNGatedLRP,
     IntegratedGradients,
     PGExplainer,
     Saliency,
@@ -23,6 +24,7 @@ __all__ = [
     "Explainer",
     "Explanation",
     "GNNExplainer",
+    "GNNGatedLRP",
     "IntegratedGradients",
     "PGExplainer",
     "PyGAdapter",

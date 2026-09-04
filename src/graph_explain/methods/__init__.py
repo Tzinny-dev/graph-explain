@@ -4,10 +4,12 @@ from .gradient.saliency import Saliency
 from .perturbation.gnn_explainer import GNNExplainer
 from .perturbation.pg_explainer import PGExplainer
 from .perturbation.subgraphx import SubgraphX
+from .relevance.gnn_lrp import GNNGatedLRP
 
 __all__ = [
     "ExplanationAlgorithm",
     "GNNExplainer",
+    "GNNGatedLRP",
     "IntegratedGradients",
     "PGExplainer",
     "Saliency",

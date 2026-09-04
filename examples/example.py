@@ -9,6 +9,7 @@ from examples.model import default_data_and_model, train
 from graph_explain import (
     Explainer,
     GNNExplainer,
+    GNNGatedLRP,
     IntegratedGradients,
     PGExplainer,
     Saliency,
@@ -43,6 +44,7 @@ def main():
         ("GNNExplainer", GNNExplainer(epochs=120, lr=0.01)),
         ("PGExplainer", PGExplainer(epochs=120, lr=0.01)),
         ("SubgraphX", SubgraphX(rollout=20, num_hops=3, max_nodes=15)),
+        ("GNN-LRP", GNNGatedLRP(normalize=True)),
         ("Saliency", Saliency()),
         ("IntegratedGradients", IntegratedGradients(steps=25)),
     ]
@@ -51,10 +53,14 @@ def main():
     os.makedirs(output_dir, exist_ok=True)
 
     for name, algo in methods:
-        explainer = Explainer(
-            algorithm=algo,
-            mask_threshold=0.4 if not isinstance(algo, SubgraphX) else 0.5,
+        mask_threshold = (
+            0.05
+            if isinstance(algo, GNNGatedLRP)
+            else 0.4
+            if not isinstance(algo, SubgraphX)
+            else 0.5
         )
+        explainer = Explainer(algorithm=algo, mask_threshold=mask_threshold)
         expl = explainer.explain_node(data, model, node_idx=anchor)
         metrics = (
             expl.evaluate(metrics=["fidelity", "sparsity"])
