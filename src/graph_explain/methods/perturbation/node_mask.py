@@ -12,12 +12,12 @@ from ..base import ExplanationAlgorithm
 
 @register("node_mask", "nodemask", "nm")
 class NodeMask(ExplanationAlgorithm):
-    """NodeMask: máscara de nodos aprendida por optimización.
+    """NodeMask: node mask learned by optimization.
 
-    Optimiza una máscara (sigmoid) sobre los nodos del subgrafo k-hop del nodo
-    objetivo para que el modelo conserve la predicción, con regularización de
-    entropía para forzar esparcidad. La importancia de nodo resultante se
-    re-proyecta al grafo completo (0 fuera del vecindario).
+    Optimizes a (sigmoid) mask over the nodes of the target node's k-hop
+    subgraph so the model keeps its prediction, with an entropy regularizer to
+    force sparsity. The resulting node importance is re-projected onto the full
+    graph (0 outside the neighborhood).
     """
 
     def __init__(

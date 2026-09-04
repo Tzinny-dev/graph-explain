@@ -1,65 +1,66 @@
 # Changelog
 
-Todas las versiones notables de `graph-explain`.
+All notable versions of `graph-explain`.
 
 ## [0.7.0] - 2026-09-04
 
-### Fase 10: graph-level
-- Dataset sintético de clasificación de grafos `build_graph_classification`
-  (motivo house, `y` binario, `gt_edge_mask`/`gt_nodes` por grafo).
-- `evaluate_gea_graph`: GEA graph-level sobre las aristas del motivo.
-- `explain_graph` en CLI y `bench` sin `--node` para modelos `task_level =
-  "graph"`; atributo `graph_level` por método (node-only se marca `skipped`).
-- Modelo y entrenamiento graph-level de ejemplo (`GraphGCN`, `train_graph`).
-- `Saliency` e `IntegratedGradients` aceptan `index=None` (graph-level).
+### Phase 10: graph-level
+- Synthetic graph-classification dataset `build_graph_classification` (house
+  motif, binary `y`, per-graph `gt_edge_mask`/`gt_nodes`).
+- `evaluate_gea_graph`: graph-level GEA over the motif edges.
+- `explain_graph` in the CLI and `bench` without `--node` for `task_level =
+  "graph"` models; per-method `graph_level` flag (node-only methods are marked
+  `skipped`).
+- Example graph-level model and training (`GraphGCN`, `train_graph`).
+- `Saliency` and `IntegratedGradients` accept `index=None` (graph-level).
 
 ## [0.6.0] - 2026-09-04
 
-### Fase 8: más métodos
-- `GraphLIME` (`graph_lime`/`glime`/`gl`): regresión lineal local (ridge) sobre
-  features de los vecinos k-hop ponderada por similaridad; importancia de
-  features y nodos sin entrenamiento.
-- `NodeMask` (`node_mask`/`nodemask`/`nm`): máscara de nodos aprendida por
-  optimización sobre el subgrafo k-hop (CE + entropía + supresión top-k).
-- `GuidedBackprop` (`guided_backprop`/`guided-backprop`/`gbp`): gradientes
-  guiados por la máscara ReLU con fallback a gradiente estándar.
-- `RandomBaseline` (`random`/`random_baseline`/`rand`): línea base uniforme
-  seed-able para benchmarks.
-- Empaquetado: metadata de proyecto ampliada (classifiers, extras `dev`).
+### Phase 8: more methods
+- `GraphLIME` (`graph_lime`/`glime`/`gl`): local linear (ridge) regression over
+  k-hop neighbors' features weighted by similarity; feature and node importance
+  without training.
+- `NodeMask` (`node_mask`/`nodemask`/`nm`): node mask learned by optimization
+  over the k-hop subgraph (CE + entropy + top-k suppression).
+- `GuidedBackprop` (`guided_backprop`/`guided-backprop`/`gbp`): gradients guided
+  by the ReLU mask with fallback to standard gradients.
+- `RandomBaseline` (`random`/`random_baseline`/`rand`): seed-able uniform
+  baseline for benchmarks.
+- Packaging: expanded project metadata (classifiers, `dev` extra).
 
-### Fase 7: benchmark comparativo
-- `compare(...)` y `report_html(...)` para comparar todos los métodos sobre un
-  nodo con battery de métricas (fid±, GEA, sparsity, stability).
-- Subcomando CLI `bench` (tabla en terminal, informes JSON/HTML).
+### Phase 7: comparative benchmark
+- `compare(...)` and `report_html(...)` to compare all methods over a node with
+  a metric battery (fid±, GEA, sparsity, stability).
+- CLI `bench` subcommand (terminal table, JSON/HTML reports).
 
 ## [0.5.0] - 2026-04-04
 
-### Fase 6: más métodos
-- `DeepLift` (regla rescale aditiva, conservativa, baseline zero).
-- `AttentionExplainer` (pesos de atención de `GATConv`).
-- `GradXInput` (gradiente × activación).
+### Phase 6: more methods
+- `DeepLift` (additive rescale rule, conservative, zero baseline).
+- `AttentionExplainer` (`GATConv` attention weights).
+- `GradXInput` (gradient × activation).
 
 ## [0.4.0] - 2025-01-01
 
-### Fase 5: CLI completa
-- Subcomando `explain` para todos los métodos (aliases incluidos), métricas,
-  narración y export JSON.
-- Versión unificada en `pyproject.toml` y `graph_explain.__version__`.
+### Phase 5: full CLI
+- `explain` subcommand for all methods (including aliases), metrics, narration
+  and JSON export.
+- Unified version in `pyproject.toml` and `graph_explain.__version__`.
 
 ## [0.3.0] - 2024-01-01
 
-### Fases 3 y 4
-- Métricas completas (fidelity±, stability, GEA) y backend DGL.
-- `GNNGatedLRP`, explicaciones contrafactuales y narración con LLM.
-- Benchmark sintético BA-Shapes con ground truth.
+### Phases 3 and 4
+- Full metrics (fidelity±, stability, GEA) and DGL backend.
+- `GNNGatedLRP`, counterfactual explanations and LLM narration.
+- Synthetic BA-Shapes benchmark with ground truth.
 
 ## [0.2.0] - 2023-01-01
 
-### Fase 2
+### Phase 2
 - `PGExplainer`, `SubgraphX`, `Integrated Gradients`.
 
 ## [0.1.0] - 2023-01-01
 
-### Fase 1
-- Núcleo (`Explainer`, `Explanation`, registry, backends).
-- `GNNExplainer`, `Saliency`, visualización estática e interactiva.
+### Phase 1
+- Core (`Explainer`, `Explanation`, registry, backends).
+- `GNNExplainer`, `Saliency`, static and interactive visualization.

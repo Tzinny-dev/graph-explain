@@ -12,13 +12,13 @@ from ..base import ExplanationAlgorithm
 
 @register("guided_backprop", "guided-backprop", "gbp")
 class GuidedBackprop(ExplanationAlgorithm):
-    """Guided Backpropagation: gradientes guiados por la máscara ReLU.
+    """Guided Backpropagation: gradients guided by the ReLU mask.
 
-    Durante la retropropagación se filtra el gradiente: solo se propaga donde la
-    activación ReLU fue positiva (y se descartan los gradientes negativos),
-    resaltando las features que contribuyen positivamente a la clase. Se
-    registran hooks temporales sobre los módulos `nn.ReLU`; si el modelo no
-    tiene ninguno, cae a gradiente estándar (metadato `guided=False`).
+    During backpropagation the gradient is filtered: it only propagates where
+    the ReLU activation was positive (negative gradients are discarded),
+    highlighting the features that positively contribute to the class. Temporary
+    hooks are registered on the `nn.ReLU` modules; if the model has none, it
+    falls back to standard gradients (metadata `guided=False`).
     """
 
     graph_level = True

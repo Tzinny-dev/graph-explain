@@ -59,7 +59,7 @@ def evaluate_fidelity_plus(
     keep_ratio: float = 0.1,
     kind: str = "edge",
 ) -> float:
-    """Necesidad: caída de P(c) al eliminar los top-k elementos importantes."""
+    """Necessity: drop in P(c) when removing the top-k important elements."""
     target = _resolve_target(explanation)
     backend, data = _context(model, explanation)
     import torch
@@ -92,7 +92,7 @@ def evaluate_fidelity_minus(
     keep_ratio: float = 0.1,
     kind: str = "edge",
 ) -> float:
-    """Suficiencia: P(c) conservada al conservar SOLO los top-k elementos."""
+    """Sufficiency: P(c) preserved when keeping ONLY the top-k elements."""
     target = _resolve_target(explanation)
     backend, data = _context(model, explanation)
     import torch
@@ -157,8 +157,9 @@ def evaluate_stability(
     top_k: int | None = None,
     seed: int = 0,
 ) -> float:
-    """Estabilidad: similitud media entre explicaciones dadas perturbaciones
-    pequeñas del grafo. `get_explanation` recibe un Data y devuelve Explanation."""
+    """Stability: mean similarity between explanations under small graph
+    perturbations. `get_explanation` receives a Data and returns an
+    Explanation."""
     from itertools import pairwise
 
     import numpy as np
@@ -213,8 +214,8 @@ def _importance_vector(explanation):
 
 
 def evaluate_gea(explanation, data=None, top_k: int | None = None) -> float:
-    """Graph Explanation Accuracy: solape entre los top-k elementos de la
-    explicación y el subgrafo relevante de ground truth del benchmark."""
+    """Graph Explanation Accuracy: overlap between the top-k elements of the
+    explanation and the benchmark's relevant ground-truth subgraph."""
     if data is None:
         data = explanation.metadata.get("backing_data")
     if data is None:
@@ -347,9 +348,9 @@ def evaluate_gea_graph(
     gt_edge_ids: list[int] | None = None,
     top_k: int | None = None,
 ) -> float:
-    """Graph Explanation Accuracy (graph-level): solape de los top-k edges de la
-    explicación con las aristas del motivo conocidas del dataset
-    (`gt_edge_mask`) del grafo explicado."""
+    """Graph Explanation Accuracy (graph-level): overlap of the explanation's
+    top-k edges with the dataset's known motif edges (`gt_edge_mask`) of the
+    explained graph."""
     if gt_edge_ids is None:
         if data is None:
             data = explanation.metadata.get("backing_data")

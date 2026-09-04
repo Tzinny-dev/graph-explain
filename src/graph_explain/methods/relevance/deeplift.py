@@ -18,18 +18,18 @@ _ACTIVATION_GATES = (
 
 @register("deep_lift", "deeplift", "dl")
 class DeepLift(ExplanationAlgorithm):
-    """DeepLIFT (regla rescale) para GCNs + ReLU + Linear.
+    """DeepLIFT (rescale rule) for GCNs + ReLU + Linear.
 
-    Es una regla aditiva: cada característica de entrada recibe una
-    contribución (delta) proporcional a cuánto cambia la salida de la clase
-    objetivo al pasar de un baseline (zero, por defecto) a la instancia real.
-    El multiplicador se propaga hacia atrás capa a capa: exacto para capas
-    lineales y mensajes GCN, y con la regla rescale (delta_out / delta_in)
-    para no linealidades elementwise.
+    It is an additive rule: each input feature receives a contribution (delta)
+    proportional to how much the target-class output changes when moving from a
+    baseline (zero, by default) to the actual instance. The multiplier is
+    propagated backwards layer by layer: exact for linear layers and GCN
+    messages, and with the rescale rule (delta_out / delta_in) for elementwise
+    nonlinearities.
 
-    Devuelve `node_importance` (|contribución| por nodo), `edge_importance`
-    (contribuciones a través del paso de mensajes de cada GCNConv, por arista
-    dirigida) y `feature_importance` (contribución por característica).
+    Returns `node_importance` (|contribution| per node), `edge_importance`
+    (contributions through the message passing of each GCNConv, per directed
+    edge) and `feature_importance` (contribution per feature).
     """
 
     def __init__(

@@ -18,19 +18,19 @@ _ACTIVATION_GATES = (
 
 @register("gnn_lrp", "gnn-lrp", "lrp")
 class GNNGatedLRP(ExplanationAlgorithm):
-    """GNN-LRP (Layer-wise Relevance Propagation para GNNs).
+    """GNN-LRP (Layer-wise Relevance Propagation for GNNs).
 
-    Propaga la relevancia desde el logit de la clase objetivo hacia atrás,
-    capa a capa, redistribuyéndola según las contribuciones positivas de cada
-    neurona (regla LRP-0 / z+). Para cada `GCNConv` la relevancia se reparte en
-    dos pasos: (a) el transformador lineal `W` sobre las features agregadas y
-    (b) la convolución, atribuyendo la relevancia a los nodos/aristas vecinas
-    proporcionalmente a su contribución en el paso de mensajes (norma GCN
-    incluida). Soporta arquitecturas GCN (`GCNConv` + `ReLU` + `Linear`).
+    Propagates the relevance from the target-class logit backwards, layer by
+    layer, redistributing it according to the positive contributions of each
+    neuron (LRP-0 / z+ rules). For each `GCNConv` the relevance is split into
+    two steps: (a) the linear transform `W` over the aggregated features and (b)
+    the convolution, attributing relevance to the neighboring nodes/edges in
+    proportion to their contribution to the message-passing step (GCN norm
+    included). Supports GCN architectures (`GCNConv` + `ReLU` + `Linear`).
 
-    La relevancia resultante es no negativa (reglas positivas) y se devuelve
-    como `node_importance` (suma por nodo) y `edge_importance` (por arista
-    dirigida, alineada con los índices de `edge_index`).
+    The resulting relevance is non-negative (positive rules) and is returned as
+    `node_importance` (sum per node) and `edge_importance` (per directed edge,
+    aligned with the `edge_index` indices).
     """
 
     def __init__(
@@ -161,7 +161,7 @@ class GNNGatedLRP(ExplanationAlgorithm):
         r: torch.Tensor,
         eps: float,
     ) -> torch.Tensor:
-        """Regla z+ (LRP-0 positiva) para una transformación lineal y = Wx."""
+        """z+ rule (positive LRP-0) for a linear transform y = Wx."""
         wp = weight.clamp(min=0)  # (out, in)
         xp = x.clamp(min=0)  # (N, in)
         contrib = xp[:, None, :] * wp[None, :, :]  # (N, out, in)
@@ -177,7 +177,7 @@ class GNNGatedLRP(ExplanationAlgorithm):
         r: torch.Tensor,
         eps: float,
     ):
-        """Relevancia a través de un GCNConv: lineal `W` + mensajes (norma GCN)."""
+        """Relevance through a GCNConv: linear `W` + messages (GCN norm)."""
         from torch_geometric.nn.conv.gcn_conv import gcn_norm
 
         num_nodes = int(x.size(0))

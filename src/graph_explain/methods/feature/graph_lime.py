@@ -12,13 +12,13 @@ from ..base import ExplanationAlgorithm
 
 @register("graph_lime", "glime", "gl")
 class GraphLIME(ExplanationAlgorithm):
-    """GraphLIME: atribución de características vía regresión local ponderada.
+    """GraphLIME: feature attribution via weighted local regression.
 
-    Ajusta una regresión lineal (ridge, en forma cerrada) sobre las features de
-    los vecinos k-hop del nodo, ponderando cada vecino por su similaridad con la
-    feature del nodo objetivo (kernel gaussiano). Los coeficientes explican la
-    probabilidad (softmax) de la clase objetivo; la importancia de nodo se
-    corresponde con la similaridad del kernel.
+    Fits a linear regression (ridge, closed form) over the k-hop neighbors'
+    features, weighting each neighbor by its similarity to the target node's
+    feature (Gaussian kernel). The coefficients explain the probability
+    (softmax) of the target class; node importance matches the kernel
+    similarity.
     """
 
     def __init__(

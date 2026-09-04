@@ -17,18 +17,18 @@ def _softmax(logits, c: int) -> float:
 
 @register("counterfactual", "counterfactual_explainer", "cf")
 class Counterfactual(ExplanationAlgorithm):
-    """Explicación contrafactual: perturbación mínima que cambia la predicción.
+    """Counterfactual explanation: minimal perturbation that changes the prediction.
 
-    Encuentra el conjunto mínimo de aristas (mode='edge') o de coordenadas de
-    features (mode='feature') cuya eliminación/reaqulineación consigue que la
-    predicción del nodo cambie de clase (o alcance `flip_to`). La búsqueda es
-    greedy y determinista: en cada paso se elimina el elemento candidato que más
-    reduce `P(clase original)`; si la clase no cambia en `max_steps` pasos se
-    devuelve el estado actual (predicción sin cambios).
+    Finds the minimal set of edges (mode='edge') or feature coordinates
+    (mode='feature') whose removal/re-scaling makes the node's prediction change
+    class (or reach `flip_to`). The search is greedy and deterministic: at each
+    step it removes the candidate element that most reduces `P(original class)`;
+    if the class does not change within `max_steps` steps it returns the current
+    state (prediction unchanged).
 
-    La importancia devuelta marca los elementos modificados (aristas 0/1, nodos
-    según su incidencia en aristas eliminadas, features cambiadas 0/1), con
-    `prediction_explanation` = logits tras la perturbación.
+    The returned importance marks the modified elements (edges 0/1, nodes from
+    their incidence on removed edges, changed features 0/1), with
+    `prediction_explanation` = logits after the perturbation.
     """
 
     def __init__(

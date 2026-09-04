@@ -143,7 +143,7 @@ class TestCLIGraphLevel:
         )
         assert rc == 0
         out = capsys.readouterr().out
-        assert "Métricas:" in out
+        assert "Metrics:" in out
 
     def test_node_only_method_rejected_on_graph(self, tmp_path, capsys):
         from graph_explain.cli import main
@@ -166,7 +166,7 @@ class TestCLIGraphLevel:
             ]
         )
         assert rc == 2
-        assert "no soporta explicación graph-level" in capsys.readouterr().err
+        assert "does not support graph-level" in capsys.readouterr().err
 
     def test_bench_graph(self, tmp_path, capsys):
         from graph_explain.cli import main
@@ -192,4 +192,4 @@ class TestCLIGraphLevel:
         assert rc == 0
         out = capsys.readouterr().out
         assert "Benchmark graph-level" in out
-        assert "solo node-level" in out
+        assert "node-level only" in out

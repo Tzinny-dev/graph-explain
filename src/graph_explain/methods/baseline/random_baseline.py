@@ -11,11 +11,11 @@ from ..base import ExplanationAlgorithm
 
 @register("random", "random_baseline", "rand")
 class RandomBaseline(ExplanationAlgorithm):
-    """Random: línea base de importancia uniforme aleatoria (seed-able).
+    """Random: seed-able uniform random importance baseline.
 
-    Asigna importancias aleatorias en [0, 1] a nodos, aristas y features sin
-    ningún vínculo con el modelo; útil como referencia de escenario nulo en
-    benchmarks comparativos.
+    Assigns random importances in [0, 1] to nodes, edges and features with no
+    link to the model; useful as a null-scenario reference in comparative
+    benchmarks.
     """
 
     graph_level = True

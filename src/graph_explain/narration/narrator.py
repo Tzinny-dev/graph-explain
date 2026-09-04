@@ -42,7 +42,7 @@ def _edge_index(data, backend) -> Any | None:
 
 
 def summarize(explanation, data: Any | None = None, top_k: int = 5) -> dict[str, Any]:
-    """Resumen estructurado de una explicación (para narración o JSON)."""
+    """Structured summary of an explanation (for narration or JSON)."""
     backend, data = _data_context(explanation, data)
     node = explanation.node_idx
     target = explanation.target_class
@@ -91,7 +91,7 @@ def summarize(explanation, data: Any | None = None, top_k: int = 5) -> dict[str,
 
 
 def describe(explanation, data: Any | None = None, top_k: int = 5) -> str:
-    """Narración determinista (plantillas) en español de una explicación."""
+    """Deterministic template-based narration of an explanation (Spanish by default)."""
     s = summarize(explanation, data, top_k)
     node = s["node"]
     target = (
@@ -158,8 +158,9 @@ def narrate(
     data: Any | None = None,
     top_k: int = 5,
 ) -> str:
-    """Narra una explicación. Con `llm` (callable prompt->text) usa la salida
-    del modelo generativo; sin él, usa la narración determinista por plantilla."""
+    """Narrates an explanation. With `llm` (a `prompt -> text` callable) it uses the
+    generative model's output; otherwise it falls back to deterministic
+    template-based narration."""
     summary = summarize(explanation, data, top_k)
     deterministic = describe(explanation, data, top_k)
     if llm is None:
@@ -171,7 +172,7 @@ def narrate(
 
 
 class Narrator:
-    """Narrador reutilizable; permite inyectar el LLM una sola vez."""
+    """Reusable narrator; lets you inject the LLM just once."""
 
     def __init__(self, llm: Callable[[str], str] | None = None, top_k: int = 5):
         self.llm = llm

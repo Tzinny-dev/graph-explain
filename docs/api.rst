@@ -5,8 +5,8 @@ API Reference
    :members:
    :no-index:
 
-Núcleo
-------
+Core
+----
 
 .. automodule:: graph_explain.core.explainer
    :members:
@@ -20,14 +20,14 @@ Núcleo
    :members:
    :undoc-members:
 
-Métricas
---------
+Metrics
+-------
 
 .. automodule:: graph_explain.core.evaluation
    :members:
    :undoc-members:
 
-Benchmark comparativo
+Comparative benchmark
 ---------------------
 
 .. automodule:: graph_explain.core.benchmark
@@ -41,7 +41,7 @@ Backends
    :members:
    :undoc-members:
 
-Métodos
+Methods
 -------
 
 .. automodule:: graph_explain.methods.perturbation.gnn_explainer
@@ -83,21 +83,21 @@ Métodos
 .. automodule:: graph_explain.methods.baseline.random_baseline
    :members:
 
-Benchmarks sintéticos
----------------------
+Synthetic benchmarks
+--------------------
 
 .. automodule:: graph_explain.benchmarks.synthetic
    :members:
    :undoc-members:
 
-Narración
+Narration
 ---------
 
 .. automodule:: graph_explain.narration
    :members:
    :undoc-members:
 
-Visualización
+Visualization
 -------------
 
 .. automodule:: graph_explain.visualization

@@ -123,12 +123,12 @@ def build_graph_classification(
     num_features: int = 8,
     feature_style: str = "random",
 ):
-    """Conjunto de clasificación de grafos con motivo 'house' conocido.
+    """Graph classification dataset with a known 'house' motif.
 
-    Devuelve una lista de `Data` graph-level con etiqueta binaria `y` (1 si el
-    grafo contiene el motivo house). Cada grafo lleva `gt_edge_mask` (bool sobre
-    las aristas dirigidas, incluye ambas direcciones) y `gt_nodes` con los nodos
-    del motivo (+ ancla).
+    Returns a list of graph-level `Data` with a binary label `y` (1 if the graph
+    contains the house motif). Each graph carries `gt_edge_mask` (bool over the
+    directed edges, both directions included) and `gt_nodes` with the motif
+    nodes (+ hub).
     """
     from torch_geometric.data import Data
 
@@ -201,7 +201,7 @@ def build_graph_classification(
 
 
 def ground_truth_edges_graph(data) -> list[int]:
-    """Índices (dirigidos) de las aristas del motivo para un grafo del dataset."""
+    """(Directed) indices of the motif edges for a graph of the dataset."""
     mask = getattr(data, "gt_edge_mask", None)
     if mask is None:
         return []

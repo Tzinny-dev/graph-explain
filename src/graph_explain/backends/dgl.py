@@ -19,12 +19,12 @@ def _first_available(mapping: dict, keys: tuple[str, ...], default):
 
 
 class DGLAdapter(Backend):
-    """Adaptador para grafos `dgl.DGLGraph` y modelos DGL.
+    """Adapter for `dgl.DGLGraph` graphs and DGL models.
 
-    Convención de datos: las features de nodo van en `ndata['feat']`, las
-    etiquetas en `ndata['label']` y los pesos de arista en `edata['w']`
-    (también se aceptan 'x'/'weight'). El modelo DGL debe leer
-    `g.ndata['feat']` y `g.edata['w']` en su `forward(graph, feat)`.
+    Data convention: node features live in `ndata['feat']`, labels in
+    `ndata['label']` and edge weights in `edata['w']` ('x'/'weight' are also
+    accepted). The DGL model must read `g.ndata['feat']` and `g.edata['w']` in
+    its `forward(graph, feat)`.
     """
 
     name = "dgl"

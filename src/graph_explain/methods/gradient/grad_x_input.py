@@ -11,13 +11,12 @@ from ..base import ExplanationAlgorithm
 
 @register("grad_x_input", "gradient_x_input", "gx")
 class GradXInput(ExplanationAlgorithm):
-    """Gradient x Input: atribución como gradiente escalado por la activación.
+    """Gradient x Input: attribution as gradient scaled by the activation.
 
-    La importancia de cada característica (y de cada arista, si el backend
-    soporta pesos de arista) es el gradiente del logit de la clase objetivo
-    multiplicado por la diferencia entrada-baseline (baseline cero por
-    defecto). La importancia de nodo es la suma de |grad × Δx| por
-    características.
+    The importance of each feature (and of each edge, if the backend supports
+    edge weights) is the gradient of the target-class logit multiplied by the
+    input-baseline difference (zero baseline by default). Node importance is the
+    sum of |grad × Δx| over features.
     """
 
     graph_level = True

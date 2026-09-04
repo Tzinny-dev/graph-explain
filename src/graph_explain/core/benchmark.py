@@ -79,14 +79,14 @@ def compare(
     mask_threshold: float = 0.5,
     stability: bool = True,
 ) -> dict:
-    """Ejecuta varios métodos de explicación y compara métricas.
+    """Runs several explanation methods and compares their metrics.
 
-    Usa `node` para node-level (obligatorio) o `node=None` para graph-level
-    (los métodos solo-node se marcan como `skipped`). Devuelve un diccionario
-    con una entrada por método: clase, predicciones, métricas (fidelity±, GEA,
-    sparsidad, estabilidad) y el resumen estructurado `summarize`. Los métodos
-    no aplicables o las métricas que fallen se marcan como `skipped`/`None` sin
-    abortar el resto.
+    Uses `node` for node-level (required) or `node=None` for graph-level
+    (node-only methods are marked `skipped`). Returns a dictionary with one
+    entry per method: class, predictions, metrics (fidelity±, GEA, sparsity,
+    stability) and the structured `summarize` summary. Non-applicable methods
+    or failing metrics are marked as `skipped`/`None` without aborting the
+    rest.
     """
     from ..backends import get_backend
 
@@ -117,12 +117,12 @@ def compare(
             "skipped": None,
         }
         if node is None and not cls.graph_level:
-            entry["skipped"] = "solo node-level"
+            entry["skipped"] = "node-level only"
             results[name] = entry
             skipped[name] = entry["skipped"]
             continue
         if name == "attention" and not _has_gat(model):
-            entry["skipped"] = "requiere un modelo con capas GATConv"
+            entry["skipped"] = "requires a model with GATConv layers"
             results[name] = entry
             skipped[name] = entry["skipped"]
             continue
@@ -210,7 +210,7 @@ def compare(
 
 
 def report_html(results: dict, output_path: str) -> None:
-    """Genera un informe HTML (tabla comparativa) autocontenido."""
+    """Builds a self-contained HTML report (comparative table)."""
     meta = results["_meta"]
     rows = []
     for name, entry in results.items():
@@ -220,7 +220,7 @@ def report_html(results: dict, output_path: str) -> None:
         if entry["skipped"]:
             rows.append(
                 f"<tr><td>{name}</td>"
-                f"<td colspan='7' class='skip'>no aplicable: {entry['skipped']}</td></tr>"
+                f"<td colspan='7' class='skip'>not applicable: {entry['skipped']}</td></tr>"
             )
             continue
         cells = "".join(
@@ -249,21 +249,21 @@ def report_html(results: dict, output_path: str) -> None:
 </style>
 </head>
 <body>
-<h1>Benchmark comparativo de explicaciones</h1>
+<h1>Comparative explanation benchmark</h1>
 <p class="meta">
-  nodo <code>{meta["node"]}</code> &middot; clase objetivo
+  node <code>{meta["node"]}</code> &middot; target class
   <code>{meta["target_class"]}</code> &middot; backend <code>{meta["backend"]}</code>
 </p>
 <table>
 <tr>
-  <th>Método</th><th>fid+</th><th>fid-</th><th>GEA</th><th>sparsity</th><th>stability</th>
+  <th>Method</th><th>fid+</th><th>fid-</th><th>GEA</th><th>sparsity</th><th>stability</th>
 </tr>
 {body}
 </table>
 <p class="meta">
-  Generado con <code>graph-explain</code>. fid+ = necesidad (caída de P(c) al
-  eliminar top-k), fid- = suficiencia, GEA = solape con ground truth, sparsity =
-  esparcidad global, stability = similitud media ante perturbaciones.
+  Generated with <code>graph-explain</code>. fid+ = necessity (drop in P(c) after
+  removing top-k), fid- = sufficiency, GEA = overlap with ground truth, sparsity =
+  global sparsity, stability = mean similarity under perturbations.
 </p>
 </body>
 </html>"""

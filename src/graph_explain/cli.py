@@ -54,71 +54,85 @@ _METRICS = ["fidelity", "fidelity_plus", "fidelity_minus", "gea", "stability"]
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="graph-explain",
-        description="Explicabilidad de modelos basados en grafos (GNN).",
+        description="Explainability for graph-based models (GNNs).",
     )
     parser.add_argument(
         "--version", action="version", version=f"graph-explain {__version__}"
     )
     sub = parser.add_subparsers(dest="command")
 
-    explain = sub.add_parser("explain", help="Explicar la predicción de un nodo/grafo")
-    explain.add_argument("--model", required=True, help="Ruta al modelo guardado (.pt)")
-    explain.add_argument("--data", required=True, help="Ruta al Data guardado (.pt)")
+    explain = sub.add_parser(
+        "explain", help="Explain the prediction of a node/graph"
+    )
+    explain.add_argument("--model", required=True, help="Path to the saved model (.pt)")
+    explain.add_argument(
+        "--data", required=True, help="Path to the saved Data (.pt)"
+    )
     explain.add_argument("--method", default="gnn_explainer", choices=_METHODS)
     explain.add_argument(
-        "--node", type=int, default=None, help="Índice del nodo a explicar (node-level)"
+        "--node",
+        type=int,
+        default=None,
+        help="Node index to explain (node-level)",
     )
     explain.add_argument("--target-class", type=int, default=None)
     explain.add_argument("--epochs", type=int, default=200)
     explain.add_argument("--lr", type=float, default=None)
     explain.add_argument(
-        "--mode", default="edge", choices=["edge", "feature"], help="Modo contrafactual"
+        "--mode",
+        default="edge",
+        choices=["edge", "feature"],
+        help="Counterfactual mode",
     )
     explain.add_argument("--hops", type=int, default=2)
     explain.add_argument("--max-steps", type=int, default=10)
     explain.add_argument("--eps", type=float, default=None)
     explain.add_argument("--steps", type=int, default=50)
-    explain.add_argument("--normalize", action="store_true", help="GNN-LRP normalizado")
+    explain.add_argument("--normalize", action="store_true", help="Normalized GNN-LRP")
     explain.add_argument("--backend", default="pyg", choices=["pyg", "dgl"])
-    explain.add_argument("--output", default=None, help="Guardar la explicación en .pt")
+    explain.add_argument("--output", default=None, help="Save the explanation to .pt")
     explain.add_argument(
-        "--plot", default=None, help="Guardar visualización en .png/.pdf"
+        "--plot", default=None, help="Save visualization to .png/.pdf"
     )
     explain.add_argument(
-        "--html", default=None, help="Guardar visualización interactiva en .html"
+        "--html",
+        default=None,
+        help="Save interactive visualization to .html",
     )
     explain.add_argument("--threshold", type=float, default=0.5)
     explain.add_argument(
-        "--top-k", type=int, default=5, help="Top-k para GEA/stability/JSON"
+        "--top-k", type=int, default=5, help="Top-k for GEA/stability/JSON"
     )
     explain.add_argument(
         "--metrics",
         default="",
-        help=f"Lista separada por comas: {', '.join(_METRICS)}",
+        help=f"Comma-separated list: {', '.join(_METRICS)}",
     )
     explain.add_argument("--num-perturbations", type=int, default=10)
     explain.add_argument("--noise-std", type=float, default=0.05)
-    explain.add_argument("--describe", action="store_true", help="Imprimir narración")
+    explain.add_argument("--describe", action="store_true", help="Print the narration")
     explain.add_argument(
-        "--json", default=None, help="Exportar resumen + métricas a .json"
+        "--json", default=None, help="Export summary + metrics to .json"
     )
 
     bench = sub.add_parser(
-        "bench", help="Benchmark comparativo de métodos sobre un nodo"
+        "bench", help="Comparative benchmark of methods over a node"
     )
-    bench.add_argument("--model", required=True, help="Ruta al modelo guardado (.pt)")
-    bench.add_argument("--data", required=True, help="Ruta al Data guardado (.pt)")
+    bench.add_argument("--model", required=True, help="Path to the saved model (.pt)")
+    bench.add_argument(
+        "--data", required=True, help="Path to the saved Data (.pt)"
+    )
     bench.add_argument(
         "--node",
         type=int,
         default=None,
-        help="Índice del nodo (node-level); omitir para graph-level",
+        help="Node index (node-level); omit for graph-level",
     )
     bench.add_argument("--target-class", type=int, default=None)
     bench.add_argument(
         "--methods",
         default="all",
-        help=f"Métodos separados por comas (o 'all'). Aliases: {', '.join(_METHODS)}",
+        help=f"Comma-separated methods (or 'all'). Aliases: {', '.join(_METHODS)}",
     )
     bench.add_argument("--backend", default="pyg", choices=["pyg", "dgl"])
     bench.add_argument("--epochs", type=int, default=200)
@@ -129,9 +143,9 @@ def build_parser() -> argparse.ArgumentParser:
     bench.add_argument("--threshold", type=float, default=0.5)
     bench.add_argument("--seed", type=int, default=0)
     bench.add_argument("--no-stability", action="store_true")
-    bench.add_argument("--json", default=None, help="Exportar resultados a .json")
+    bench.add_argument("--json", default=None, help="Export results to .json")
     bench.add_argument(
-        "--html", default=None, help="Exportar informe comparativo a .html"
+        "--html", default=None, help="Export comparative report to .html"
     )
     return parser
 
@@ -209,7 +223,7 @@ def _eval_metric(name: str, args, model, data, explanation) -> float | None:
             return float(evaluate_gea(explanation, data=data, top_k=args.top_k))
         if name == "stability":
             if args.node is None:
-                raise ValueError("stability requiere --node")
+                raise ValueError("stability requires --node")
 
             def _again(d):
                 return _make_explainer(args).explain_node(d, model, args.node)
@@ -224,9 +238,9 @@ def _eval_metric(name: str, args, model, data, explanation) -> float | None:
                 )
             )
     except Exception as exc:  # noqa: BLE001
-        print(f"  * métrica {name} no disponible: {exc}", file=sys.stderr)
+        print(f"  * metric {name} unavailable: {exc}", file=sys.stderr)
         return None
-    raise ValueError(f"métrica desconocida: {name}")
+    raise ValueError(f"unknown metric: {name}")
 
 
 def _cmd_explain(args: argparse.Namespace) -> int:
@@ -243,15 +257,15 @@ def _cmd_explain(args: argparse.Namespace) -> int:
         if task == "graph":
             if not get_algorithm(args.method).graph_level:
                 print(
-                    f"Error: {args.method} no soporta explicación graph-level "
-                    "(solo node-level).",
+                    f"Error: {args.method} does not support graph-level explanations "
+                    "(node-level only).",
                     file=sys.stderr,
                 )
                 return 2
             index = None
         else:
             print(
-                "Para explicar es necesario indicar --node (explicación por nodo).",
+                "To explain a node you must pass --node (per-node explanation).",
                 file=sys.stderr,
             )
             return 2
@@ -268,15 +282,15 @@ def _cmd_explain(args: argparse.Namespace) -> int:
             target_class=args.target_class,
         )
     except ValueError as exc:
-        print(f"Error con {args.method}: {exc}", file=sys.stderr)
+        print(f"Error with {args.method}: {exc}", file=sys.stderr)
         return 2
     algorithm_class = get_algorithm(args.method)
 
-    print(f"Método: {args.method} ({algorithm_class.__name__})")
-    print(f"Predicción original: {_fmt(explanation.prediction_original)}")
+    print(f"Method: {args.method} ({algorithm_class.__name__})")
+    print(f"Original prediction: {_fmt(explanation.prediction_original)}")
     if explanation.prediction_explanation is not None:
         print(
-            f"Predicción tras explicación: {_fmt(explanation.prediction_explanation)}"
+            f"Prediction after explanation: {_fmt(explanation.prediction_explanation)}"
         )
 
     metrics: dict[str, float | None] = {}
@@ -286,12 +300,12 @@ def _cmd_explain(args: argparse.Namespace) -> int:
             if not name:
                 continue
             metrics[name] = _eval_metric(name, args, model, data, explanation)
-        print(f"Métricas: {metrics}")
+        print(f"Metrics: {metrics}")
 
     if args.describe:
         from graph_explain import describe
 
-        print(f"Narración: {describe(explanation, data=data, top_k=args.top_k)}")
+        print(f"Narration: {describe(explanation, data=data, top_k=args.top_k)}")
 
     if args.json:
         from graph_explain import summarize
@@ -310,11 +324,11 @@ def _cmd_explain(args: argparse.Namespace) -> int:
         }
         with open(args.json, "w", encoding="utf-8") as fh:
             json.dump(_json_safe(report), fh, indent=2, ensure_ascii=False)
-        print(f"Informe JSON guardado en {args.json}")
+        print(f"JSON report saved to {args.json}")
 
     if args.output:
         torch.save(explanation, args.output)
-        print(f"Explicación guardada en {args.output}")
+        print(f"Explanation saved to {args.output}")
     if args.plot:
         from graph_explain.visualization import visualize_static
 
@@ -322,14 +336,14 @@ def _cmd_explain(args: argparse.Namespace) -> int:
         import matplotlib.pyplot as plt
 
         plt.savefig(args.plot, bbox_inches="tight")
-        print(f"Visualización guardada en {args.plot}")
+        print(f"Visualization saved to {args.plot}")
     if args.html:
         from graph_explain.visualization import visualize_interactive
 
         visualize_interactive(
             explanation, output_path=args.html, threshold=args.threshold
         )
-        print(f"Visualización interactiva guardada en {args.html}")
+        print(f"Interactive visualization saved to {args.html}")
     return 0
 
 
@@ -344,9 +358,7 @@ def _cmd_bench(args: argparse.Namespace) -> int:
 
     task = getattr(model, "task_level", "node")
     if args.node is None and task != "graph":
-        print(
-            "Para node-level es necesario indicar --node.", file=sys.stderr
-        )
+        print("For node-level you must pass --node.", file=sys.stderr)
         return 2
 
     if args.methods.strip().lower() == "all":
@@ -366,8 +378,8 @@ def _cmd_bench(args: argparse.Namespace) -> int:
     methods = list(dict.fromkeys(methods))
 
     print(
-        f"Benchmark {'sobre nodo ' + str(args.node) if args.node is not None else 'graph-level'}"
-        f" ({len(methods)} métodos) - backend {args.backend}\n"
+        f"Benchmark {'over node ' + str(args.node) if args.node is not None else 'graph-level'}"
+        f" ({len(methods)} methods) - backend {args.backend}\n"
     )
     results = compare(
         data,
@@ -386,14 +398,14 @@ def _cmd_bench(args: argparse.Namespace) -> int:
         stability=not args.no_stability,
     )
 
-    headers = ("Método", "fid+", "fid-", "GEA", "sparsity", "stab")
+    headers = ("Method", "fid+", "fid-", "GEA", "sparsity", "stab")
     widths = [len(h) for h in headers]
     rows: list[tuple[Any, ...]] = []
     for name, entry in results.items():
         if name.startswith("_"):
             continue
         if entry["skipped"]:
-            rows.append((name, "no aplicable", "", "", "", ""))
+            rows.append((name, "not applicable", "", "", "", ""))
             continue
         m = entry["metrics"]
         rows.append(
@@ -421,7 +433,7 @@ def _cmd_bench(args: argparse.Namespace) -> int:
 
     skipped = results["_meta"]["skipped"]
     if skipped:
-        print("\nOmitidos:")
+        print("\nSkipped:")
         for name, reason in skipped.items():
             print(f"  {name}: {reason}")
 
@@ -433,10 +445,10 @@ def _cmd_bench(args: argparse.Namespace) -> int:
         out["_meta"]["version"] = __version__
         with open(args.json, "w", encoding="utf-8") as fh:
             json.dump(_json_safe(out), fh, indent=2, ensure_ascii=False)
-        print(f"\nResultados JSON guardados en {args.json}")
+        print(f"\nResults saved to JSON at {args.json}")
     if args.html:
         report_html(results, args.html)
-        print(f"Informe HTML guardado en {args.html}")
+        print(f"HTML report saved to {args.html}")
     return 0
 
 

@@ -20,13 +20,12 @@ def _is_gat(module) -> bool:
 
 @register("attention", "gat", "attention_explainer")
 class AttentionExplainer(ExplanationAlgorithm):
-    """Explicación basada en los pesos de atención de modelos GAT.
+    """Explanation based on the attention weights of GAT models.
 
-    Captura los coeficientes de atención (pre-softmax) de cada `GATConv`
-    durante un único forward y los normaliza con softmax por vecino. La
-    importancia de arista es la media de los coeficientes a través de las
-    cabezas de atención y de las capas GAT; la importancia de nodo agrega la
-    atención de las aristas incidentes.
+    Captures the attention coefficients (pre-softmax) of each `GATConv` during a
+    single forward pass and normalizes them with a per-neighbor softmax. Edge
+    importance is the mean of the coefficients across attention heads and GAT
+    layers; node importance aggregates the attention of the incident edges.
     """
 
     def __init__(

@@ -64,7 +64,7 @@ class TestCLI:
         )
         assert rc == 0
         out = capsys.readouterr().out
-        assert "Método: counterfactual" in out
+        assert "Method: counterfactual" in out
         assert "Explicación del nodo 0" in out
 
         report = json.loads(json_path.read_text())
@@ -166,7 +166,7 @@ class TestCLI:
             ]
         )
         assert rc == 2
-        assert "indicar --node" in capsys.readouterr().err
+        assert "you must pass --node" in capsys.readouterr().err
 
     def test_metrics_stability_and_fidelity(self, tmp_path, capsys):
         model_path, data_path = _save_model_and_data(tmp_path)
@@ -190,7 +190,7 @@ class TestCLI:
         assert rc == 0
         out = capsys.readouterr().out
         assert "stability" in out and "fidelity_plus" in out and "gea" in out
-        assert "Métricas:" in out
+        assert "Metrics:" in out
 
     def test_unknown_method(self, tmp_path):
         model_path, data_path = _save_model_and_data(tmp_path)
