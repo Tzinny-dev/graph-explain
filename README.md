@@ -119,6 +119,19 @@ src/graph_explain/
 features van en `ndata['feat']`, las etiquetas en `ndata['label']` y los pesos de
 arista en `edata['w']`; el modelo debe leer `g.ndata['feat']` y `g.edata['w']`.
 
+**Validación DGL con librería real**: DGL 2.1.0 solo incluye librerías C++ de
+graphbolt para torch ≤ 2.2.1, así que la integración real se prueba en una
+máquina virtual aislada (`tests/test_dgl_integration.py`, se salta si dgl no
+está disponible):
+
+```bash
+python3.12 -m venv /tmp/dgl-venv
+/tmp/dgl-venv/bin/pip install torch==2.2.1 --index-url https://download.pytorch.org/whl/cpu \
+    dgl==2.1.0 "numpy<2" "scipy<1.14" "pandas" "torchdata==0.7.1" \
+    "torch-geometric==2.6.1" setuptools packaging
+cd graph-explain && PYTHONPATH=. /tmp/dgl-venv/bin/python -m pytest tests -q
+```
+
 ## Métricas (fase 3)
 
 ````python
@@ -145,9 +158,9 @@ Ejemplo en `examples/example.py`, benchmark con `num_houses=30`: GNNExplainer �
 - [x] Fase 2: PGExplainer, SubgraphX, Integrated Gradients
 - [x] Fase 2: visualización interactiva (pyvis → HTML)
 - [x] Fase 3: métricas completas (fidelity±, stability, GEA)
-- [x] Fase 3: backend DGL (adaptador; validado con mock de la API dgl)
-- [~/] Fase 4: GNN-LRP (relevancia por capas para GCNs; valida el motivo house en BA-Shapes)
-- [~/] Fase 4: explicaciones contrafactuales (mínima eliminación de aristas/features que cambia la clase)
+- [x] Fase 3: backend DGL (adaptador; integración validada con DGL 2.1 + torch 2.2.1)
+- [x] Fase 4: GNN-LRP (relevancia por capas para GCNs; valida el motivo house en BA-Shapes)
+- [x] Fase 4: explicaciones contrafactuales (mínima eliminación de aristas/features que cambia la clase)
 - [x] Fase 4: narración con LLM (`describe` determinista + `narrate` con LLM enchufable)
 
 ## Licencia
