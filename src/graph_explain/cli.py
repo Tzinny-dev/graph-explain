@@ -61,13 +61,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
     sub = parser.add_subparsers(dest="command")
 
-    explain = sub.add_parser(
-        "explain", help="Explain the prediction of a node/graph"
-    )
+    explain = sub.add_parser("explain", help="Explain the prediction of a node/graph")
     explain.add_argument("--model", required=True, help="Path to the saved model (.pt)")
-    explain.add_argument(
-        "--data", required=True, help="Path to the saved Data (.pt)"
-    )
+    explain.add_argument("--data", required=True, help="Path to the saved Data (.pt)")
     explain.add_argument("--method", default="gnn_explainer", choices=_METHODS)
     explain.add_argument(
         "--node",
@@ -91,9 +87,7 @@ def build_parser() -> argparse.ArgumentParser:
     explain.add_argument("--normalize", action="store_true", help="Normalized GNN-LRP")
     explain.add_argument("--backend", default="pyg", choices=["pyg", "dgl"])
     explain.add_argument("--output", default=None, help="Save the explanation to .pt")
-    explain.add_argument(
-        "--plot", default=None, help="Save visualization to .png/.pdf"
-    )
+    explain.add_argument("--plot", default=None, help="Save visualization to .png/.pdf")
     explain.add_argument(
         "--html",
         default=None,
@@ -115,13 +109,9 @@ def build_parser() -> argparse.ArgumentParser:
         "--json", default=None, help="Export summary + metrics to .json"
     )
 
-    bench = sub.add_parser(
-        "bench", help="Comparative benchmark of methods over a node"
-    )
+    bench = sub.add_parser("bench", help="Comparative benchmark of methods over a node")
     bench.add_argument("--model", required=True, help="Path to the saved model (.pt)")
-    bench.add_argument(
-        "--data", required=True, help="Path to the saved Data (.pt)"
-    )
+    bench.add_argument("--data", required=True, help="Path to the saved Data (.pt)")
     bench.add_argument(
         "--node",
         type=int,

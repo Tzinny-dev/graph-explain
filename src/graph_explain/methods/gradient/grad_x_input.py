@@ -16,7 +16,7 @@ class GradXInput(ExplanationAlgorithm):
     The importance of each feature (and of each edge, if the backend supports
     edge weights) is the gradient of the target-class logit multiplied by the
     input-baseline difference (zero baseline by default). Node importance is the
-    sum of |grad × Δx| over features.
+    sum of `abs(grad * Δx)` over features.
     """
 
     graph_level = True

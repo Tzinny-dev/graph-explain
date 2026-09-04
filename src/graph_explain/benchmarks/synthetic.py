@@ -137,9 +137,7 @@ def build_graph_classification(
     for cls in (1, 0):
         count = num_pos if cls == 1 else num_neg
         for _ in range(count):
-            base = int(
-                rng.integers(base_nodes_range[0], base_nodes_range[1] + 1)
-            )
+            base = int(rng.integers(base_nodes_range[0], base_nodes_range[1] + 1))
             tree_seed = int(rng.integers(0, 2**31 - 1))
             g = nx.barabasi_albert_graph(base, m, seed=tree_seed)
             g = g.to_undirected()
@@ -177,9 +175,7 @@ def build_graph_classification(
             edge_index = torch.cat([edge_index, edge_index.flip(0)], dim=1)
 
             gt_pairs = set(gt_edges) | {(v, u) for u, v in gt_edges}
-            gt_edge_mask = torch.zeros(
-                edge_index.size(1), dtype=torch.bool
-            )
+            gt_edge_mask = torch.zeros(edge_index.size(1), dtype=torch.bool)
             if cls == 1:
                 for i, (s, d) in enumerate(
                     zip(edge_index[0].tolist(), edge_index[1].tolist())

@@ -159,9 +159,7 @@ def compare(
         )
         if node is not None:
             m["gea"] = _safe(
-                lambda expl=expl_arg: float(
-                    evaluate_gea(expl, data=data, top_k=top_k)
-                )
+                lambda expl=expl_arg: float(evaluate_gea(expl, data=data, top_k=top_k))
             )
         else:
             m["gea"] = _safe(

@@ -56,9 +56,7 @@ def _train_graphs(graphs, model, epochs=200, lr=0.01):
 
 class TestGraphDataset:
     def setup_method(self):
-        self.graphs = build_graph_classification(
-            num_pos=8, num_neg=8, seed=0
-        )
+        self.graphs = build_graph_classification(num_pos=8, num_neg=8, seed=0)
 
     def test_shapes_and_labels(self):
         assert len(self.graphs) == 16

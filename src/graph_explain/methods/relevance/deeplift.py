@@ -27,7 +27,7 @@ class DeepLift(ExplanationAlgorithm):
     messages, and with the rescale rule (delta_out / delta_in) for elementwise
     nonlinearities.
 
-    Returns `node_importance` (|contribution| per node), `edge_importance`
+    Returns `node_importance` (absolute contribution per node), `edge_importance`
     (contributions through the message passing of each GCNConv, per directed
     edge) and `feature_importance` (contribution per feature).
     """
