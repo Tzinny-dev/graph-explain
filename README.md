@@ -19,6 +19,9 @@ importantes**, con métricas de evaluación y visualización integradas.
 - `Counterfactual` — perturbación mínima (aristas o features) que cambia la
   predicción de un nodo (búsqueda greedy determinista); devuelve los elementos
   modificados como importancia y los logits tras el cambio.
+- **Narración**: `describe(expl)` genera una explicación en lenguaje natural
+  (español) por plantillas, y `narrate(expl, llm=...)` permite enchufar un
+  modelo generativo (callable `prompt -> texto`) para una redacción libre.
 - **Métricas**:
   - `evaluate_sparsity` — esparcidad global o local (`local=True`, sobre el subgrafo k-hop).
   - `evaluate_fidelity_plus` — **necesidad**: caída de `P(c)` al eliminar los top-k elementos.
@@ -145,7 +148,7 @@ Ejemplo en `examples/example.py`, benchmark con `num_houses=30`: GNNExplainer �
 - [x] Fase 3: backend DGL (adaptador; validado con mock de la API dgl)
 - [~/] Fase 4: GNN-LRP (relevancia por capas para GCNs; valida el motivo house en BA-Shapes)
 - [~/] Fase 4: explicaciones contrafactuales (mínima eliminación de aristas/features que cambia la clase)
-- [ ] Fase 4: narración con LLM
+- [x] Fase 4: narración con LLM (`describe` determinista + `narrate` con LLM enchufable)
 
 ## Licencia
 

@@ -16,6 +16,7 @@ from .methods import (
     Saliency,
     SubgraphX,
 )
+from .narration import Narrator, describe, narrate
 from .visualization import show, visualize_interactive, visualize_static
 
 __version__ = "0.3.0"
@@ -28,11 +29,13 @@ __all__ = [
     "GNNExplainer",
     "GNNGatedLRP",
     "IntegratedGradients",
+    "Narrator",
     "PGExplainer",
     "PyGAdapter",
     "Saliency",
     "SubgraphX",
     "__version__",
+    "describe",
     "evaluate_fidelity_minus",
     "evaluate_fidelity_plus",
     "evaluate_gea",
@@ -40,6 +43,7 @@ __all__ = [
     "evaluate_stability",
     "get_algorithm",
     "get_backend",
+    "narrate",
     "register",
     "show",
     "visualize_interactive",

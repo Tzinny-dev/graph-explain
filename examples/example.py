@@ -15,6 +15,7 @@ from graph_explain import (
     PGExplainer,
     Saliency,
     SubgraphX,
+    describe,
 )
 from graph_explain.core.evaluation import (
     evaluate_fidelity_minus,
@@ -77,6 +78,7 @@ def main():
         data, model, node_idx=anchor
     )
     print(f"GNNExplainer completo -> {expl}")
+    print(f"Narración: {describe(expl, data=data)}")
     print(
         f"{'':20s}    fid+= {evaluate_fidelity_plus(model, expl):+.3f}  "
         f"fid-= {evaluate_fidelity_minus(model, expl):.3f}  "
