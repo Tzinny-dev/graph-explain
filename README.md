@@ -1,0 +1,109 @@
+# graph-explain
+
+Librería de explicabilidad para modelos basados en grafos (Graph Neural Networks).
+Explica las predicciones de una GNN en términos de **nodos, aristas y subgrafos
+importantes**, con métricas de evaluación y visualización integradas.
+
+## Características
+
+- **API unificada**: un solo objeto `Explainer` para todos los métodos.
+- **Métodos de explicación**:
+- `GNNExplainer` — máscaras suaves sobre nodos/aristas (perturbación).
+  - `PGExplainer` — MLP que genera máscaras de aristas (inductive, rápido en inferencia).
+  - `SubgraphX` — búsqueda MCTS de subgrafos que maximizan la predicción (alta fidelidad).
+- `Saliency` — importancia basada en gradientes.
+- `Integrated Gradients` — acumulación de gradientes con baseline (rutas de importancia).
+- **Métricas**: fidelidad y esparcidad.
+- **Benchmarks incluidos**: generador sintético BA-Shapes con ground truth.
+- **Visualización** estática (matplotlib + networkx) e interactiva (pyvis → HTML).
+- **Backends**: PyTorch Geometric (v1). DGL en roadmap.
+- **CLI** para explicar modelos guardados sin escribir código.
+
+## Instalación
+
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -e .[all]
+```
+
+Dependencias opcionales: `pyg` (PyTorch Geometric), `interactive` (plotly/pyvis).
+
+## Uso rápido
+
+```python
+from graph_explain import Explainer, GNNExplainer, Saliency
+from graph_explain.benchmarks.synthetic import build_data
+from graph_explain.visualization import show
+
+data = build_data(base_nodes=300, num_houses=80)   # BA-Shapes con ground truth
+model = GCN(in_channels=data.x.size(1))            # tu GNN entrenada
+model.eval()
+
+explainer = Explainer(algorithm=GNNExplainer(epochs=150))
+expl = explainer.explain_node(data, model, node_idx=42)
+
+print(expl.evaluate(metrics=["fidelity", "sparsity"]))
+print(expl.evaluate(metrics=["sparsity"], local=True))  # esparcidad en el subgrafo k-hop del nodo
+show(expl, show_labels=True)                       # resalta el subgrafo explicativo
+```
+
+## Notas de tuning de esparcidad
+
+- **Modelos estructurales**: los explicadores por perturbación (GNNExplainer,
+  PGExplainer, SubgraphX) asumen que la predicción depende de la estructura
+  vecinal. Un `GCNConv` con `add_self_loops=True` y `bias=True` puede predecir la
+  clase solo con sesgos/self-loops; en ese caso las máscaras de aristas colapsan a
+  cero porque las aristas no importan. Para demostraciones con sentido usa
+  `GCNConv(..., add_self_loops=False, bias=False)` (ver `examples/model.py`).
+- **Split del benchmark**: `build_data` reparte train/test sobre **todos** los
+  nodos (incluidos los motivos). Si el modelo solo se entrena con clase 0 aprende
+  a ignorar la estructura.
+- **`PGExplainer(temp=...)`**: con `temp=5` el gradiente del muestreo
+  Gumbel-sigmoid se aplana (~0.05) y la máscara colapsa a cero. El valor por
+  defecto es `temp=1.0`.
+- **Esparcidad local**: `evaluate_sparsity(expl, local=True)` mide la esparcidad
+  sobre el subgrafo `k-hop` del nodo explicado en lugar de todo el grafo; si la
+  máscara se cuenta sobre el grafo completo, las explicaciones locales se diluyen
+  (aparentan sparsity casi 1).
+
+## CLI
+
+```bash
+# Guarda modelo y datos antes:
+torch.save(model, "model.pt"); torch.save(data, "data.pt")
+
+graph-explain explain \
+  --model model.pt --data data.pt \
+  --method gnn_explainer --node 42 \
+  --plot explicacion.png
+```
+
+## Objeto `Explanation`
+
+- `node_importance`: importancia por nodo `(num_nodes,)`.
+- `edge_importance`: importancia por arista.
+- `feature_importance`: importancia por característica (según método).
+- `prediction_original` / `prediction_explanation`: logits para evaluar fidelidad.
+- Métodos: `evaluate(metrics=[...])`, `to_networkx(threshold=...)`, `visualize_static(...)`.
+
+## Estructura
+
+```
+src/graph_explain/
+├── core/         # Explainer, Explanation, registry, evaluation
+├── methods/      # gnn_explainer, saliency (perturbation / gradient)
+├── backends/     # Backend API + PyGAdapter
+├── benchmarks/   # generador sintético BA-Shapes
+└── visualization/ # plots estáticos
+```
+
+## Roadmap
+
+- [x] Fase 2: PGExplainer, SubgraphX, Integrated Gradients
+- [x] Fase 2: visualización interactiva (pyvis → HTML)
+- [ ] Fase 3: backend DGL, métricas completas (fidelity±, stability, GEA)
+- [ ] Fase 4: GNN-LRP, explicaciones contrafactuales, narration con LLM
+
+## Licencia
+
+MIT
