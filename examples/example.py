@@ -14,6 +14,12 @@ from graph_explain import (
     Saliency,
     SubgraphX,
 )
+from graph_explain.core.evaluation import (
+    evaluate_fidelity_minus,
+    evaluate_fidelity_plus,
+    evaluate_gea,
+    evaluate_stability,
+)
 from graph_explain.visualization import show, visualize_interactive
 
 warnings.filterwarnings("ignore")
@@ -50,18 +56,34 @@ def main():
             mask_threshold=0.4 if not isinstance(algo, SubgraphX) else 0.5,
         )
         expl = explainer.explain_node(data, model, node_idx=anchor)
-        metrics = expl.evaluate(metrics=["fidelity", "sparsity"]) if expl.prediction_explanation is not None else expl.evaluate(metrics=["sparsity"])
+        metrics = (
+            expl.evaluate(metrics=["fidelity", "sparsity"])
+            if expl.prediction_explanation is not None
+            else expl.evaluate(metrics=["sparsity"])
+        )
         local = expl.evaluate(metrics=["sparsity"], local=True)
         print(f"{name:20s} -> {expl}")
         print(f"{'':20s}    métricas: {metrics} | local: {local}")
 
-    expl = Explainer(algorithm=GNNExplainer(epochs=120)).explain_node(data, model, node_idx=anchor)
-    visualize_interactive(expl, output_path=f"{output_dir}/explicacion.html", threshold=0.4)
-    show(expl, threshold=0.4, show_labels=True, title=f"GNNExplainer (nodo {anchor}, clase 2)")
-
-
-if __name__ == "__main__":
-    main()
+    expl = Explainer(algorithm=GNNExplainer(epochs=120)).explain_node(
+        data, model, node_idx=anchor
+    )
+    print(f"GNNExplainer completo -> {expl}")
+    print(
+        f"{'':20s}    fid+= {evaluate_fidelity_plus(model, expl):+.3f}  "
+        f"fid-= {evaluate_fidelity_minus(model, expl):.3f}  "
+        f"GEA= {evaluate_gea(expl, data=data):.3f}  "
+        f"stab= {evaluate_stability(lambda d: Explainer(algorithm=GNNExplainer(epochs=40)).explain_node(d, model, node_idx=anchor), data, num_perturbations=5, noise_std=0.02, seed=3):.3f}"
+    )
+    visualize_interactive(
+        expl, output_path=f"{output_dir}/explicacion.html", threshold=0.4
+    )
+    show(
+        expl,
+        threshold=0.4,
+        show_labels=True,
+        title=f"GNNExplainer (nodo {anchor}, clase 2)",
+    )
 
 
 if __name__ == "__main__":

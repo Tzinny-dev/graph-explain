@@ -89,7 +89,11 @@ class PyGAdapter(Backend):
 def get_backend(name: str) -> Backend:
     if name == "pyg":
         return PyGAdapter()
-    raise ValueError(f"Backend desconocido: {name}. Disponibles: ['pyg']")
+    if name == "dgl":
+        from ..backends.dgl import DGLAdapter
+
+        return DGLAdapter()
+    raise ValueError(f"Backend desconocido: {name}. Disponibles: ['pyg', 'dgl']")
 
 
 def default_mask_type(model: Any, data: Any) -> tuple[str | None, str | None]:

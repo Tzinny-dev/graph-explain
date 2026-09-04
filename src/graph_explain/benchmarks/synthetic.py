@@ -33,7 +33,9 @@ def ba_shapes(
     seed: int = 0,
     num_features: int = 10,
     feature_style: str = "degree",
-) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+) -> tuple[
+    torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor
+]:
     rng = np.random.default_rng(seed)
     g = nx.barabasi_albert_graph(base_nodes, m, seed=seed)
     g = g.to_undirected()
@@ -57,11 +59,11 @@ def ba_shapes(
         x = rng.normal(0.0, 1.0, size=(node_count, num_features)).astype(np.float32)
     else:
         x = np.zeros((node_count, feat_dim), dtype=np.float32)
-        x[np.arange(node_count), np.minimum(degrees.astype(np.int64), feat_dim - 1)] = 1.0
+        x[np.arange(node_count), np.minimum(degrees.astype(np.int64), feat_dim - 1)] = (
+            1.0
+        )
 
-    edge_index = torch.tensor(
-        np.array(g.edges(), dtype=np.int64).T, dtype=torch.long
-    )
+    edge_index = torch.tensor(np.array(g.edges(), dtype=np.int64).T, dtype=torch.long)
     edge_index = torch.cat([edge_index, edge_index.flip(0)], dim=1)
     y = torch.zeros(node_count, dtype=torch.long)
     for n, l in labels.items():
@@ -107,4 +109,48 @@ def build_data(
         train_mask=train_mask,
         test_mask=test_mask,
         house_anchors=house_anchors,
+        base_nodes=base_nodes,
+        num_houses=num_houses,
     )
+
+
+HOUSE_SIZE = 5
+
+
+def ground_truth_nodes(data, node: int) -> list[int]:
+    base_nodes = int(getattr(data, "base_nodes", 0))
+    if base_nodes <= 0:
+        return []
+    node = int(node)
+    if node >= base_nodes:
+        house_idx = (node - base_nodes) // HOUSE_SIZE
+        return list(
+            range(
+                base_nodes + house_idx * HOUSE_SIZE,
+                base_nodes + (house_idx + 1) * HOUSE_SIZE,
+            )
+        )
+    anchors = data.house_anchors
+    if anchors is not None and anchors.numel() and node in anchors.tolist():
+        idx = int((anchors == node).nonzero(as_tuple=False).flatten()[0])
+        members = list(
+            range(base_nodes + idx * HOUSE_SIZE, base_nodes + (idx + 1) * HOUSE_SIZE)
+        )
+        return members + [node]
+    return []
+
+
+def ground_truth_edge_ids(data, node: int, edge_index) -> list[int]:
+    import torch
+
+    gt_nodes = set(ground_truth_nodes(data, node))
+    if not gt_nodes:
+        return []
+    src = edge_index[0]
+    dst = edge_index[1]
+    both = torch.isin(src, torch.as_tensor(list(gt_nodes))) & torch.isin(
+        dst, torch.as_tensor(list(gt_nodes))
+    )
+    if torch.is_tensor(both):
+        return both.nonzero(as_tuple=False).flatten().tolist()
+    return [i for i, ok in enumerate(both) if ok]

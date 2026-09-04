@@ -13,10 +13,17 @@ importantes**, con métricas de evaluación y visualización integradas.
   - `SubgraphX` — búsqueda MCTS de subgrafos que maximizan la predicción (alta fidelidad).
 - `Saliency` — importancia basada en gradientes.
 - `Integrated Gradients` — acumulación de gradientes con baseline (rutas de importancia).
-- **Métricas**: fidelidad y esparcidad.
-- **Benchmarks incluidos**: generador sintético BA-Shapes con ground truth.
+- **Métricas**:
+  - `evaluate_sparsity` — esparcidad global o local (`local=True`, sobre el subgrafo k-hop).
+  - `evaluate_fidelity_plus` — **necesidad**: caída de `P(c)` al eliminar los top-k elementos.
+  - `evaluate_fidelity_minus` — **suficiencia**: `P(c)` conservada al quedarse SOLO con los top-k.
+  - `evaluate_stability` — similitud media entre explicaciones ante perturbaciones de features/aristas.
+  - `evaluate_gea` — **Graph Explanation Accuracy**: solape de los top-k con el subgrafo de ground truth (BA-Shapes).
+- **Benchmarks incluidos**: generador sintético BA-Shapes con ground truth y
+  helpers `ground_truth_nodes` / `ground_truth_edge_ids`.
 - **Visualización** estática (matplotlib + networkx) e interactiva (pyvis → HTML).
-- **Backends**: PyTorch Geometric (v1). DGL en roadmap.
+- **Backends**: PyTorch Geometric y DGL (vía adaptador; DGL requiere una versión
+  de PyTorch con librerías precompiladas de graphbolt).
 - **CLI** para explicar modelos guardados sin escribir código.
 
 ## Instalación
@@ -26,7 +33,8 @@ python -m venv .venv && source .venv/bin/activate
 pip install -e .[all]
 ```
 
-Dependencias opcionales: `pyg` (PyTorch Geometric), `interactive` (plotly/pyvis).
+Dependencias opcionales: `pyg` (PyTorch Geometric), `dgl` (backend DGL),
+`interactive` (plotly/pyvis).
 
 ## Uso rápido
 
@@ -91,17 +99,44 @@ graph-explain explain \
 ```
 src/graph_explain/
 ├── core/         # Explainer, Explanation, registry, evaluation
-├── methods/      # gnn_explainer, saliency (perturbation / gradient)
-├── backends/     # Backend API + PyGAdapter
-├── benchmarks/   # generador sintético BA-Shapes
+├── methods/      # gnn_explainer, subgraphx, pg_explainer, saliency, integrated_gradients
+├── backends/     # Backend API + PyGAdapter + DGLAdapter
+├── benchmarks/   # generador sintético BA-Shapes + helpers de ground truth
 └── visualization/ # plots estáticos
+
 ```
+
+`get_backend(name)` devuelve `PyGAdapter` o `DGLAdapter`. Para DGL, las
+features van en `ndata['feat']`, las etiquetas en `ndata['label']` y los pesos de
+arista en `edata['w']`; el modelo debe leer `g.ndata['feat']` y `g.edata['w']`.
+
+## Métricas (fase 3)
+
+````python
+from graph_explain.core.evaluation import (
+    evaluate_fidelity_plus, evaluate_fidelity_minus,
+    evaluate_stability, evaluate_gea,
+)
+
+fp = evaluate_fidelity_plus(model, expl)    # necesidad: quitar top-k elementos → baja P(c)
+fm = evaluate_fidelity_minus(model, expl)   # suficiencia: solo top-k → conserva P(c)
+stab = evaluate_stability(
+    lambda d: Explainer(algorithm=GNNExplainer(epochs=40)).explain_node(d, model, node_idx=42),
+    data, num_perturbations=5, noise_std=0.02,
+)
+gea = evaluate_gea(expl, data=data)         # solape con el motivo BA-Shapes
+```
+
+Ejemplo en `examples/example.py`, benchmark con `num_houses=30`: GNNExplainer →
+`fid+ 0.74 / fid- 0.99 / GEA 0.92 / stab 0.85`.
+````
 
 ## Roadmap
 
 - [x] Fase 2: PGExplainer, SubgraphX, Integrated Gradients
 - [x] Fase 2: visualización interactiva (pyvis → HTML)
-- [ ] Fase 3: backend DGL, métricas completas (fidelity±, stability, GEA)
+- [x] Fase 3: métricas completas (fidelity±, stability, GEA)
+- [x] Fase 3: backend DGL (adaptador; validado con mock de la API dgl)
 - [ ] Fase 4: GNN-LRP, explicaciones contrafactuales, narration con LLM
 
 ## Licencia
