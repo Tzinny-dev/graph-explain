@@ -268,19 +268,9 @@ Node-only methods (`GraphLIME`, `NodeMask`, `Attention`, `GNNGatedLRP`,
 
 ## Roadmap
 
-- [x] Phase 2: PGExplainer, SubgraphX, Integrated Gradients
-- [x] Phase 2: interactive visualization (pyvis → HTML)
-- [x] Phase 3: full metrics (fidelity±, stability, GEA)
-- [x] Phase 3: DGL backend (adapter; integration validated with DGL 2.1 + torch 2.2.1)
-- [x] Phase 4: GNN-LRP (layer-wise relevance for GCNs; validates the house motif in BA-Shapes)
-- [x] Phase 4: counterfactual explanations (minimal edge/feature removal that changes the class)
-- [x] Phase 4: LLM narration (`describe` deterministic + pluggable `narrate` LLM)
-- [x] Phase 5: full CLI (all methods, metrics, narration and JSON export)
-- [x] Phase 6: more methods (DeepLIFT rescale, Attention/GAT, Gradient×Input)
-- [x] Phase 7: comparative benchmark (`compare` + CLI `bench` subcommand, table and JSON/HTML reports)
-- [x] Phase 8: more methods (GraphLIME, NodeMask, GuidedBackprop and Random baseline)
-- [x] Phase 10: graph-level explanations (graph-classification dataset with house
-  motif, graph-level GEA, CLI/bench without `--node` and `graph_level` flag)
+Planned ideas (real-world Datasets, more methods, robustness metrics) are
+tracked as issues in the repository — see
+https://github.com/Tzinny-dev/graph-explain/issues
 
 ## License
 
