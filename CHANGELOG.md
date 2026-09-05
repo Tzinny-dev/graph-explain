@@ -2,6 +2,14 @@
 
 All notable versions of `graph-explain`.
 
+## [0.7.2] - 2026-09-05
+
+### Narration and CI
+- Bilingual narration: `describe`/`narrate`/`Narrator` accept
+  `lang="es"|"en"` (Spanish default); English templates, LLM prompt and fallback.
+- `all` extra now includes `dgl`.
+- CI: real DGL integration job (torch 2.2.1 + DGL 2.1.0).
+
 ## [0.7.1] - 2026-09-05
 
 ### Packaging
