@@ -2,6 +2,15 @@
 
 All notable versions of `graph-explain`.
 
+## [0.7.1] - 2026-09-05
+
+### Packaging
+- `torch` moved to base dependencies so `pip install graph-explain` imports
+  out of the box (PyG remains an optional extra).
+- Added `LICENSE` (MIT) packaged via `license-files`, `py.typed` marker for
+  type checkers, and `[project.urls]` (Homepage/Repository/Documentation).
+- `description` metadata translated to English.
+
 ## [0.7.0] - 2026-09-04
 
 ### Phase 10: graph-level

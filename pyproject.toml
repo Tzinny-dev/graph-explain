@@ -4,11 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "graph-explain"
-version = "0.7.0"
+version = "0.7.1"
 description = "Explainability library for graph-based models (GNN)"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
+license-files = ["LICENSE"]
 authors = [{ name = "graph-explain contributors" }]
 keywords = [
     "gnn",
@@ -34,7 +35,13 @@ dependencies = [
     "numpy>=1.24",
     "networkx>=3.0",
     "matplotlib>=3.6",
+    "torch>=2.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/Tzinny-dev/graph-explain"
+Repository = "https://github.com/Tzinny-dev/graph-explain"
+Documentation = "https://github.com/Tzinny-dev/graph-explain#readme"
 
 [project.optional-dependencies]
 pyg = ["torch>=2.0", "torch-geometric>=2.5"]
@@ -50,6 +57,9 @@ graph-explain = "graph_explain.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+graph_explain = ["py.typed"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
