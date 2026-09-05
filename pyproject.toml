@@ -47,7 +47,7 @@ Documentation = "https://github.com/Tzinny-dev/graph-explain#readme"
 pyg = ["torch>=2.0", "torch-geometric>=2.5"]
 dgl = ["torch>=2.0", "dgl>=2.0"]
 interactive = ["plotly>=5.15", "pyvis>=0.3"]
-all = ["torch>=2.0", "torch-geometric>=2.5", "plotly>=5.15", "pyvis>=0.3"]
+all = ["torch>=2.0", "torch-geometric>=2.5", "dgl>=2.0", "plotly>=5.15", "pyvis>=0.3"]
 dev = ["pytest>=7.0", "ruff>=0.5", "build>=1.0"]
 docs = ["sphinx>=7.2", "sphinx-rtd-theme>=2.0"]
 publish = ["twine>=5.0"]

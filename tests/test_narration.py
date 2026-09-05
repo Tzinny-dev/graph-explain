@@ -74,3 +74,49 @@ class TestNarration:
         _, expl = self._setup()
         narrator = Narrator(llm=None)
         assert narrator.describe(expl) == describe(expl)
+
+    def test_describe_english(self):
+        data, expl = self._setup()
+        text = describe(expl, data=data, lang="en")
+        assert "node" in text
+        assert "class" in text
+        assert "most relevant" in text
+        assert text == describe(expl, data=data, lang="en")  # determinista
+
+    def test_english_vs_spanish(self):
+        data, expl = self._setup()
+        es = describe(expl, data=data, lang="es")
+        en = describe(expl, data=data, lang="en")
+        assert es != en
+        assert "nodo" in es and "node" in en
+
+    def test_narrate_with_llm_english(self):
+        _, expl = self._setup()
+
+        def fake_llm(prompt):
+            return "CUSTOM NARRATION"
+
+        text = narrate(expl, llm=fake_llm, lang="en")
+        assert text == "CUSTOM NARRATION"
+
+    def test_narrate_fallback_english(self):
+        _, expl = self._setup()
+
+        def broken_llm(_prompt):
+            raise RuntimeError("no api")
+
+        text = narrate(expl, llm=broken_llm, lang="en")
+        assert "LLM unavailable" in text
+        assert "Explanation of node" in text
+
+    def test_invalid_lang(self):
+        import pytest
+
+        _, expl = self._setup()
+        with pytest.raises(ValueError):
+            describe(expl, lang="fr")
+
+    def test_narrator_class_english(self):
+        _, expl = self._setup()
+        narrator = Narrator(llm=None, lang="en")
+        assert narrator.describe(expl) == describe(expl, lang="en")
