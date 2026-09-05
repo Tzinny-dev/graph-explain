@@ -64,6 +64,7 @@ jobs:
         run: python -m build
       - name: Verify wheel installs and imports
         run: |
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch
           python -m pip install --no-deps dist/*.whl
           python -c "import graph_explain; assert graph_explain.__version__"
       - uses: actions/upload-artifact@v4
