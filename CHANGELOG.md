@@ -15,6 +15,8 @@ All notable versions of `graph-explain`.
   and the pages show the real package version.
 - `publish` workflow reduced to PyPI upload + GitHub Release (docs deployment
   moved out to its own workflow).
+- GitHub Releases now use the matching `CHANGELOG.md` section as their body
+  (falling back to a link to the changelog when the version has no entry yet).
 - `Documentation` project URL now points to the published site.
 
 ## [0.7.2] - 2026-09-05

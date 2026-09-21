@@ -37,6 +37,36 @@ jobs:
     needs: pypi
     steps:
       - uses: actions/checkout@v4
+      - name: Build release body from CHANGELOG
+        run: |
+          python3 - <<'PY' || true
+          import os
+          import pathlib
+          import re
+
+          tag = os.environ.get("GITHUB_REF_NAME", "")
+          version = tag.lstrip("v")
+          body = ""
+          changelog = pathlib.Path("CHANGELOG.md")
+          if version and changelog.exists():
+              text = changelog.read_text(encoding="utf-8")
+              pattern = re.compile(
+                  rf"^## \[{re.escape(version)}\][^\n]*\n(.*?)(?=^## \[|\Z)",
+                  re.M | re.S,
+              )
+              match = pattern.search(text)
+              if match:
+                  body = match.group(1).strip()
+          if not body:
+              repo = os.environ.get("GITHUB_REPOSITORY", "")
+              body = (
+                  f"Release {tag}.\n\n"
+                  f"See [CHANGELOG.md](https://github.com/{repo}/blob/{tag}/"
+                  "CHANGELOG.md) for the full history."
+              )
+          pathlib.Path("release_body.md").write_text(body + "\n", encoding="utf-8")
+          PY
+          touch release_body.md
       - uses: softprops/action-gh-release@v2
         with:
-          generate_release_notes: true
+          body_path: release_body.md
