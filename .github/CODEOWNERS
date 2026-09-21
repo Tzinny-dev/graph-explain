@@ -1,0 +1,7 @@
+* @Tzinny-dev
+
+# Documentation (site + workflow)
+/docs/ @Tzinny-dev
+/.github/workflows/docs.yml @Tzinny-dev
+/.github/workflows/publish.yml @Tzinny-dev
+/pyproject.toml @Tzinny-dev

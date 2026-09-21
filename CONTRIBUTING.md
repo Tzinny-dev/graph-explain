@@ -2,6 +2,17 @@
 
 Thanks for contributing to `graph-explain`!
 
+## Reporting issues & security
+
+- **Bugs y features**: usa las plantillas de
+  [Issues](https://github.com/Tzinny-dev/graph-explain/issues/new/choose)
+  (bug report / feature request).
+- **Preguntas de uso**: abre una discusión en
+  [GitHub Discussions](https://github.com/Tzinny-dev/graph-explain/discussions).
+- **Vulnerabilidades de seguridad**: **nunca** por issue público. Sigue la
+  política de [SECURITY.md](SECURITY.md) (Private Vulnerability Reporting o
+  email).
+
 ## Development setup
 
 ```bash
@@ -84,6 +95,14 @@ The Sphinx docs live in `docs/` and are published to GitHub Pages at
 - `docs/conf.py` mocks `torch`, `torch_geometric` and `dgl` via
   `autodoc_mock_imports`, so autodoc can import `graph_explain` even when the
   full ML stack is not installed.
+
+## Pull requests
+
+- Los PRs usan la plantilla con checklist; complétala (especialmente
+  CHANGELOG y tests).
+- Todos los checks de CI (`lint`, `test` 3.10–3.12, `dgl`, `docs`, `build`)
+  deben pasar antes del merge.
+- Un CODEOWNERS (`/.github/CODEOWNERS`) define los reviewers por defecto.
 
 ## Code style
 
