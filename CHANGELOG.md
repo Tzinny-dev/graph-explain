@@ -2,6 +2,22 @@
 
 All notable versions of `graph-explain`.
 
+## [Unreleased]
+
+### Coverage in CI
+- New dedicated `coverage` CI job: branch coverage on Python 3.12 with a
+  `fail_under = 80` threshold enforced from `pyproject.toml`
+  (`[tool.coverage.report]`). Locally, `python -m pytest --cov=graph_explain`
+  picks up the same config.
+- `pytest-cov` added to the `dev` extra; standard excludes for
+  `TYPE_CHECKING`, `__main__`, import fallbacks and abstract stubs.
+- Coverage artifacts (`coverage.xml`/`coverage.json`) uploaded on every CI run
+  and a self-hosted `coverage.svg` badge published to the docs site
+  (`/_static/badges/coverage.svg`), rendered on the docs landing page and the
+  README.
+- Test results (`pytest-results.xml`) are now uploaded as artifacts for all
+  Python versions in the matrix.
+
 ## [0.7.3] - 2026-09-21
 
 ### Documentation and CI

@@ -29,8 +29,14 @@ Optional extras: `dgl` (DGL backend), `interactive` (plotly/pyvis),
 ruff check src tests examples        # lint
 ruff format --check src tests examples  # formatting (or `ruff format` to apply)
 python -m pytest -q                  # test suite
+python -m pytest -q --cov=graph_explain   # test suite with coverage report
 python -m sphinx -b html docs docs/_build/html  # build the docs
 ```
+
+Coverage (branch, threshold `fail_under = 80`) is enforced in CI by the
+dedicated `coverage` job and configured in `pyproject.toml`
+(`[tool.coverage.*]`). The badge shown in the README/docs is generated there
+from `coverage.json` and published to the docs site.
 
 The `dgl` extra validates against the real DGL library, which only ships
 pre-built graphbolt binaries for `torch<=2.2.1`. To run that validation

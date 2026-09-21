@@ -48,7 +48,7 @@ pyg = ["torch>=2.0", "torch-geometric>=2.5"]
 dgl = ["torch>=2.0", "dgl>=2.0"]
 interactive = ["plotly>=5.15", "pyvis>=0.3"]
 all = ["torch>=2.0", "torch-geometric>=2.5", "dgl>=2.0", "plotly>=5.15", "pyvis>=0.3"]
-dev = ["pytest>=7.0", "ruff>=0.5", "build>=1.0"]
+dev = ["pytest>=7.0", "pytest-cov>=5.0", "ruff>=0.5", "build>=1.0"]
 docs = ["sphinx>=7.2", "sphinx-rtd-theme>=2.0"]
 publish = ["twine>=5.0"]
 
@@ -63,6 +63,27 @@ graph_explain = ["py.typed"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# Coverage runs in the dedicated `coverage` CI job (see .github/workflows/ci.yml).
+# Locally: `python -m pytest --cov=graph_explain` picks up this config.
+[tool.coverage.run]
+branch = true
+source = ["graph_explain"]
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+precision = 0
+exclude_also = [
+  "if TYPE_CHECKING:",
+  'if __name__ == "__main__":',
+  'except ImportError:',
+  'raise NotImplementedError',
+]
+[tool.coverage.json]
+pretty_print = false
+[tool.coverage.html]
+directory = "docs/_build/coverage"
+[tool.coverage.paths]
+source = ["src/graph_explain/", "*/site-packages/graph_explain/"]
 
 [tool.ruff]
 line-length = 88
