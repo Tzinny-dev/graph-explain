@@ -114,7 +114,7 @@ class AttentionExplainer(ExplanationAlgorithm):
             feature_importance=None,
             prediction_original=logits[nodes[0]].detach().cpu(),
             prediction_explanation=None,
-            node_idx=int(nodes[0]) if nodes.shape[0] == 1 else index,
+            node_idx=int(nodes[0]) if nodes.shape[0] == 1 else None,
             target_class=target_cls,
         )
 

@@ -54,7 +54,8 @@ class GuidedBackprop(ExplanationAlgorithm):
         target = max(0, min(int(target), logits.size(1) - 1))
 
         relus = [m for m in model.modules() if isinstance(m, nn.ReLU)]
-        hooks, guided = [], False
+        guided = False
+        hooks: list[torch.utils.hooks.RemovableHandle] = []
         if relus and self.fallback_to_gradient:
             guided = True
             for module in relus:

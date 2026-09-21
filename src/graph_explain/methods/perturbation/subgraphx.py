@@ -52,7 +52,7 @@ class SubgraphX(ExplanationAlgorithm):
         backend: Any,
         model: Any,
         data: Any,
-        index: int | torch.Tensor | None,
+        index: int | torch.Tensor | None = None,
         target_class: int | None = None,
         **kwargs,
     ) -> Explanation:
@@ -370,7 +370,7 @@ class SubgraphX(ExplanationAlgorithm):
         sel = set(selected)
         seen = set()
         comps = 0
-        adj = {}
+        adj: dict[int, set[int]] = {}
         src = edge_index[0].tolist()
         dst = edge_index[1].tolist()
         for u, v in zip(src, dst):

@@ -3,6 +3,7 @@ from __future__ import annotations
 import networkx as nx
 import numpy as np
 import torch
+from numpy.typing import NDArray
 
 
 def _house_motif(offset: int, anchor_in_motif: int = 3):
@@ -56,23 +57,23 @@ def ba_shapes(
     max_deg = int(degrees.max()) + 1
     feat_dim = max(max_deg, num_features)
     if feature_style == "random":
-        x = rng.normal(0.0, 1.0, size=(node_count, num_features)).astype(np.float32)
+        x_np = rng.normal(0.0, 1.0, size=(node_count, num_features)).astype(np.float32)
     else:
-        x = np.zeros((node_count, feat_dim), dtype=np.float32)
-        x[np.arange(node_count), np.minimum(degrees.astype(np.int64), feat_dim - 1)] = (
-            1.0
-        )
+        x_np = np.zeros((node_count, feat_dim), dtype=np.float32)
+        x_np[
+            np.arange(node_count), np.minimum(degrees.astype(np.int64), feat_dim - 1)
+        ] = 1.0
 
     edge_index = torch.tensor(np.array(g.edges(), dtype=np.int64).T, dtype=torch.long)
     edge_index = torch.cat([edge_index, edge_index.flip(0)], dim=1)
     y = torch.zeros(node_count, dtype=torch.long)
     for n, l in labels.items():
         y[n] = l
-    x = torch.from_numpy(x)
+    x = torch.from_numpy(x_np)
 
     house_anchors = torch.from_numpy(anchors)
 
-    perm = rng.permutation(node_count)
+    perm: NDArray[np.integer] = rng.permutation(node_count)
     train_mask = torch.zeros(node_count, dtype=torch.bool)
     test_mask = torch.zeros(node_count, dtype=torch.bool)
     split = int(0.3 * node_count)

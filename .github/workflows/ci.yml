@@ -14,9 +14,13 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-      - run: python -m pip install --upgrade pip ruff
-      - run: ruff check src tests examples
-      - run: ruff format --check src tests examples
+      - run: python -m pip install --upgrade pip ruff mypy
+      - name: Ruff (lint + format)
+        run: |
+          ruff check src tests examples
+          ruff format --check src tests examples
+      - name: mypy (static typing)
+        run: mypy
 
   test:
     runs-on: ubuntu-latest

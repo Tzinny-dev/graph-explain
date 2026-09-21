@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 import torch
 from torch import nn
@@ -127,7 +127,7 @@ class GNNGatedLRP(ExplanationAlgorithm):
             ),
             prediction_original=logits[nodes[0]].detach().cpu(),
             prediction_explanation=None,
-            node_idx=int(nodes[0]) if nodes.shape[0] == 1 else index,
+            node_idx=int(nodes[0]) if nodes.shape[0] == 1 else None,
             target_class=target_cls,
         )
 
@@ -210,7 +210,7 @@ class GNNGatedLRP(ExplanationAlgorithm):
         agg.index_add_(0, dst, norm[:, None] * x[src])
         agg_pos = agg.clamp(min=0)
 
-        r_agg = self._linear_lrp(conv.lin.weight, agg_pos, r, eps)  # (N, F)
+        r_agg = self._linear_lrp(cast(Any, conv.lin).weight, agg_pos, r, eps)  # (N, F)
 
         frac = msg / agg_pos[dst].clamp(min=eps)  # (E, F)
         r_msg = (r_agg[dst] * frac).sum(dim=-1)  # (E,)

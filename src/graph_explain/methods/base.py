@@ -3,8 +3,6 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any
 
-import torch
-
 
 class ExplanationAlgorithm(ABC):
     name = "base"
@@ -16,7 +14,7 @@ class ExplanationAlgorithm(ABC):
         backend: Any,
         model: Any,
         data: Any,
-        index: int | list[int] | torch.Tensor,
+        index: Any = None,
         target_class: int | None = None,
         **kwargs,
     ) -> Any: ...

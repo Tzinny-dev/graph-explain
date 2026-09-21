@@ -61,6 +61,14 @@ where = ["src"]
 [tool.setuptools.package-data]
 graph_explain = ["py.typed"]
 
+[tool.mypy]
+mypy_path = "src"
+files = ["src/graph_explain"]
+ignore_missing_imports = true
+check_untyped_defs = true
+warn_unused_ignores = false
+exclude = ["build/", "docs/"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 # Coverage runs in the dedicated `coverage` CI job (see .github/workflows/ci.yml).

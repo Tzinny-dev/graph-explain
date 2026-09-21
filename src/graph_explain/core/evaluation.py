@@ -322,7 +322,7 @@ def _local_scope(explanation, hops: int) -> tuple[list[int], list[int]]:
         edge_index = explanation.metadata.get("edge_index")
         num_nodes = num_nodes or explanation.metadata.get("num_nodes")
     if edge_index is None or num_nodes is None:
-        return None, None
+        return [], []
     node_idx = int(explanation.node_idx)
     visited = {node_idx}
     frontier = {node_idx}

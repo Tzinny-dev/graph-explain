@@ -29,7 +29,7 @@ class IntegratedGradients(ExplanationAlgorithm):
         backend: Any,
         model: Any,
         data: Any,
-        index: int | list[int] | torch.Tensor,
+        index: int | torch.Tensor | None = None,
         target_class: int | None = None,
         **kwargs,
     ) -> Explanation:
@@ -94,7 +94,7 @@ class IntegratedGradients(ExplanationAlgorithm):
             feature_importance=feature_importance.cpu(),
             prediction_original=logits[idx[0]].detach().reshape(1, -1).cpu(),
             prediction_explanation=None,
-            node_idx=int(idx[0].item()) if isinstance(index, int) else index,
+            node_idx=int(idx[0].item()) if isinstance(index, int) else None,
             target_class=target_class,
         )
 

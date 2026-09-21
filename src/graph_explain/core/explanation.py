@@ -42,7 +42,7 @@ class Explanation:
             raise ValueError(
                 "La explicación se creó sin backend/backing_data en metadata"
             )
-        G = nx.Graph()
+        G: nx.Graph = nx.Graph()
         keep_edges = []
         if self.edge_importance is not None:
             edge_index = backend.edge_index(data)

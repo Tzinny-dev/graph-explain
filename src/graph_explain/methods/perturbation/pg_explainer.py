@@ -53,7 +53,7 @@ class PGExplainer(ExplanationAlgorithm):
         backend: Any,
         model: Any,
         data: Any,
-        index: int | torch.Tensor | None,
+        index: int | torch.Tensor | None = None,
         target_class: int | None = None,
         **kwargs,
     ) -> Explanation:

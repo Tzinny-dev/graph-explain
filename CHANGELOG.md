@@ -4,6 +4,18 @@ All notable versions of `graph-explain`.
 
 ## [Unreleased]
 
+### Static typing (mypy)
+- `mypy` config in `pyproject.toml` (`[tool.mypy]`): `src` layout,
+  `ignore_missing_imports` for untyped ML libs, explicit excludes for
+  `build/` and untyped viz narrators.
+- Typing fixes across the codebase: typed `ExplanationAlgorithm.explain`
+  protocol (`index: Any = None`), `type[ExplanationAlgorithm]` in the
+  registry, `dict[str, Any]` benchmark entries, `NDArray[np.integer]`
+  separation from torch tensors in `synthetic.py`, `RemovableHandle` hook
+  lists, empty-list returns in evaluation BFS helpers and defensive casts
+  for `nn.Module` attribute access in LRP/DeepLift.
+- `mypy` runs on every CI push/PR (Python 3.12) as part of the lint job.
+
 ### Repository hygiene
 - `pre-commit` hooks (`ruff-check --fix`, `ruff-format`, hygiene checks:
   trailing whitespace, EOF newline, YAML/TOML validity, merge-conflict

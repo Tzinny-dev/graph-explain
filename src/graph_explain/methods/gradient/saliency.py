@@ -28,7 +28,7 @@ class Saliency(ExplanationAlgorithm):
         backend: Any,
         model: Any,
         data: Any,
-        index: int | list[int] | torch.Tensor,
+        index: int | torch.Tensor | None = None,
         target_class: int | None = None,
         **kwargs,
     ) -> Explanation:
@@ -88,6 +88,10 @@ class Saliency(ExplanationAlgorithm):
             edge_importance=None,
             prediction_original=prediction_original.cpu(),
             prediction_explanation=None,
-            node_idx=int(idx[0].item()) if isinstance(index, int) else index,
+            node_idx=(
+                int(idx[0].item())
+                if isinstance(index, int)
+                else (None if index is None else int(index[0]))
+            ),
             target_class=target_class,
         )

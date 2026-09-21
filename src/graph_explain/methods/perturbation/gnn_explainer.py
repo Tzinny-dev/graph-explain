@@ -38,7 +38,7 @@ class GNNExplainer(ExplanationAlgorithm):
         backend: Any,
         model: Any,
         data: Any,
-        index: int | torch.Tensor,
+        index: int | torch.Tensor | None = None,
         target_class: int | None = None,
         **kwargs,
     ) -> Explanation:
@@ -148,15 +148,22 @@ class GNNExplainer(ExplanationAlgorithm):
         node_full = self._scatter_node(node_mask, sub_nodes, full_num_nodes)
         edge_full = self._scatter_edge(edge_mask, sub_edge_mask, full_edge_count)
 
+        node_idx = None
+        if index is not None:
+            if torch.is_tensor(index):
+                node_idx = int(index[0])
+            elif isinstance(index, int):
+                node_idx = int(index)
+            else:
+                node_idx = int(index[0])
+
         return Explanation(
             node_importance=node_full,
             edge_importance=edge_full,
             feature_importance=None,
             prediction_original=pred_orig.cpu(),
             prediction_explanation=pred_masked.cpu(),
-            node_idx=None
-            if sub_graph_level
-            else (int(index[0]) if torch.is_tensor(index) else int(index)),
+            node_idx=node_idx,
             target_class=target_class,
             metadata={
                 "sub_nodes": sub_nodes,

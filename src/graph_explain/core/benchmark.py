@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 import torch
 
 from ..narration import summarize
@@ -105,7 +107,7 @@ def compare(
 
     for name in methods:
         cls = get_algorithm(name)
-        entry = {
+        entry: dict[str, Any] = {
             "method": name,
             "class": cls.__name__,
             "node": node,
@@ -172,6 +174,7 @@ def compare(
             lambda expl=expl_arg: float(evaluate_sparsity(expl, local=True))
         )
         if stability:
+            assert node is not None  # stability is disabled for graph-level
 
             def _again(d, name=name):
                 algo_r = instantiate(name, **_method_kwargs(epochs, lr, seed, top_k))

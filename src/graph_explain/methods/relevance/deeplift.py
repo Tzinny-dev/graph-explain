@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 import torch
 from torch import nn
@@ -117,7 +117,7 @@ class DeepLift(ExplanationAlgorithm):
             ),
             prediction_original=logits[nodes[0]].detach().cpu(),
             prediction_explanation=None,
-            node_idx=int(nodes[0]) if nodes.shape[0] == 1 else index,
+            node_idx=int(nodes[0]) if nodes.shape[0] == 1 else None,
             target_class=target_cls,
         )
 
@@ -242,7 +242,7 @@ class DeepLift(ExplanationAlgorithm):
                 else torch.ones(ei.size(1), device=x.device)
             )
         src, dst = ei[0], ei[1]
-        W = conv.lin.weight  # (out, in)
+        W = cast(Any, conv.lin).weight  # (out, in)
 
         mul_agg = mul @ W  # (N, F_in)
 
