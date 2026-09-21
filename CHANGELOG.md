@@ -2,6 +2,21 @@
 
 All notable versions of `graph-explain`.
 
+## [Unreleased]
+
+### Documentation and CI
+- Sphinx documentation is now published to GitHub Pages at
+  https://tzinny-dev.github.io/graph-explain/ through a dedicated `docs`
+  workflow (`build` + `deploy` jobs using `upload-pages-artifact` and
+  `deploy-pages`), triggered by pushes to `main` that touch `docs/`, `src/`,
+  `pyproject.toml` or the workflow itself.
+- `docs/conf.py` mocks `torch`/`torch_geometric`/`dgl` with
+  `autodoc_mock_imports`, so the API reference builds without the full ML stack
+  and the pages show the real package version.
+- `publish` workflow reduced to PyPI upload + GitHub Release (docs deployment
+  moved out to its own workflow).
+- `Documentation` project URL now points to the published site.
+
 ## [0.7.2] - 2026-09-05
 
 ### Narration and CI

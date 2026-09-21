@@ -1,5 +1,11 @@
 # graph-explain
 
+[![CI](https://github.com/Tzinny-dev/graph-explain/actions/workflows/ci.yml/badge.svg)](https://github.com/Tzinny-dev/graph-explain/actions/workflows/ci.yml)
+[![docs](https://github.com/Tzinny-dev/graph-explain/actions/workflows/docs.yml/badge.svg)](https://tzinny-dev.github.io/graph-explain/)
+[![PyPI](https://img.shields.io/pypi/v/graph-explain.svg)](https://pypi.org/project/graph-explain/)
+[![Python](https://img.shields.io/pypi/pyversions/graph-explain.svg)](https://pypi.org/project/graph-explain/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/Tzinny-dev/graph-explain/blob/main/LICENSE)
+
 Explainability library for graph-based models (Graph Neural Networks).
 Explains a GNN's predictions in terms of **important nodes, edges and subgraphs**,
 with built-in metrics and visualization.

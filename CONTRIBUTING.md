@@ -62,12 +62,28 @@ Releases are driven by git tags. To publish `x.y.z`:
 
 ```bash
 # bump version in pyproject.toml and src/graph_explain/__init__.py
+# add the matching entry at the top of CHANGELOG.md
 git tag v0.7.2
 git push origin main --follow-tags
 ```
 
 The `publish` workflow builds the sdist/wheel, uploads to PyPI (needs the
 `PYPI_API_TOKEN` repository secret) and creates the GitHub Release.
+
+## Documentation
+
+The Sphinx docs live in `docs/` and are published to GitHub Pages at
+<https://tzinny-dev.github.io/graph-explain/>.
+
+- The `docs` workflow rebuilds and deploys them on every push to `main` that
+  touches `docs/`, `src/`, `pyproject.toml` or the workflow itself (and can be
+  triggered manually with `workflow_dispatch`).
+- GitHub Pages must be configured with **Source: GitHub Actions**
+  (`build_type: workflow`), which the `deploy` job consumes through the
+  `github-pages` environment.
+- `docs/conf.py` mocks `torch`, `torch_geometric` and `dgl` via
+  `autodoc_mock_imports`, so autodoc can import `graph_explain` even when the
+  full ML stack is not installed.
 
 ## Code style
 
