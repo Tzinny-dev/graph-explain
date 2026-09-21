@@ -1,6 +1,11 @@
 Graph-Explain
 ==============
 
+.. image:: _static/badges/coverage.svg
+   :alt: coverage
+   :target: https://github.com/Tzinny-dev/graph-explain/actions/workflows/ci.yml
+
+
 An explainability library for graph-based models (GNNs).
 
 Features
