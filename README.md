@@ -85,16 +85,18 @@ from graph_explain import Explainer, GNNExplainer, Saliency
 from graph_explain.benchmarks.synthetic import build_data
 from graph_explain.visualization import show
 
-data = build_data(base_nodes=300, num_houses=80)   # BA-Shapes with ground truth
-model = GCN(in_channels=data.x.size(1))            # your trained GNN
+data = build_data(base_nodes=300, num_houses=80)  # BA-Shapes with ground truth
+model = GCN(in_channels=data.x.size(1))  # your trained GNN
 model.eval()
 
 explainer = Explainer(algorithm=GNNExplainer(epochs=150))
 expl = explainer.explain_node(data, model, node_idx=42)
 
 print(expl.evaluate(metrics=["fidelity", "sparsity"]))
-print(expl.evaluate(metrics=["sparsity"], local=True))  # sparsity over the node's k-hop subgraph
-show(expl, show_labels=True)                       # highlight the explanatory subgraph
+print(
+    expl.evaluate(metrics=["sparsity"], local=True)
+)  # sparsity over the node's k-hop subgraph
+show(expl, show_labels=True)  # highlight the explanatory subgraph
 ```
 
 ## Sparsity tuning notes
@@ -227,9 +229,15 @@ meaningless metrics are marked as `skipped`/`None` without aborting the rest:
 ```python
 from graph_explain import compare, report_html
 
-results = compare(data, model, node=42, methods=None,   # None = all
-                  num_perturbations=5, epochs=200)
-report_html(results, "bench.html")                      # self-contained HTML report
+results = compare(
+    data,
+    model,
+    node=42,
+    methods=None,  # None = all
+    num_perturbations=5,
+    epochs=200,
+)
+report_html(results, "bench.html")  # self-contained HTML report
 ```
 
 The CLI ships an equivalent subcommand:
@@ -265,7 +273,9 @@ In Python:
 from graph_explain import Explainer, evaluate_gea_graph
 from graph_explain.benchmarks.synthetic import build_graph_classification
 
-graphs = build_graph_classification(num_pos=8, num_neg=8, seed=0)  # binary y, gt_edge_mask
+graphs = build_graph_classification(
+    num_pos=8, num_neg=8, seed=0
+)  # binary y, gt_edge_mask
 model = ...  # GraphGCN (task_level="graph")
 
 expl = Explainer(algorithm=GradXInput()).explain_graph(graphs[0], model)

@@ -5,6 +5,7 @@ copyright = "2026, graph-explain contributors"
 # Add src to path so autodoc can find the package
 import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 extensions = [
@@ -48,5 +49,5 @@ def setup(app):
 
         app.config.version = __version__
         app.config.release = __version__
-    except Exception:
+    except ImportError:
         pass

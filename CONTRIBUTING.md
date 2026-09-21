@@ -87,6 +87,17 @@ git push origin main --follow-tags
 The `publish` workflow builds the sdist/wheel, uploads to PyPI (needs the
 `PYPI_API_TOKEN` repository secret) and creates the GitHub Release.
 
+## Dependency & commit hygiene
+
+- `.github/dependabot.yml` opens weekly grouped PRs for pip dependencies
+  (`build: ...`, grouped minor+patch) and GitHub Actions (`ci: ...`).
+  Security-only updates are handled separately by Dependabot security alerts.
+- Git hooks are managed with [pre-commit](https://pre-commit.com):
+  `pip install pre-commit && pre-commit install`. They run
+  `ruff-check --fix` and `ruff-format` plus hygiene checks (trailing
+  whitespace, EOF newline, YAML/TOML validity, merge-conflict markers).
+  Run against every file with `pre-commit run --all-files`.
+
 ## Documentation
 
 The Sphinx docs live in `docs/` and are published to GitHub Pages at

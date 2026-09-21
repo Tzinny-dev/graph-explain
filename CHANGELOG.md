@@ -4,6 +4,16 @@ All notable versions of `graph-explain`.
 
 ## [Unreleased]
 
+### Repository hygiene
+- `pre-commit` hooks (`ruff-check --fix`, `ruff-format`, hygiene checks:
+  trailing whitespace, EOF newline, YAML/TOML validity, merge-conflict
+  markers, large-file guard) with pinned hook revisions.
+- `dependabot.yml`: weekly grouped updates for pip dependencies (`build: ...`)
+  and GitHub Actions (`ci: ...`); security-only updates stay on Dependabot
+  security alerts.
+- Newline-at-EOF fixes across tracked files and import sorting in
+  `docs/conf.py`; its version hook now catches only `ImportError`.
+
 ### Coverage in CI
 - New dedicated `coverage` CI job: branch coverage on Python 3.12 with a
   `fail_under = 80` threshold enforced from `pyproject.toml`
