@@ -63,7 +63,7 @@ Releases are driven by git tags. To publish `x.y.z`:
 ```bash
 # bump version in pyproject.toml and src/graph_explain/__init__.py
 # add the matching entry at the top of CHANGELOG.md
-git tag v0.7.2
+git tag v0.7.3
 git push origin main --follow-tags
 ```
 

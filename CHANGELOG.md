@@ -2,7 +2,7 @@
 
 All notable versions of `graph-explain`.
 
-## [Unreleased]
+## [0.7.3] - 2026-09-21
 
 ### Documentation and CI
 - Sphinx documentation is now published to GitHub Pages at
