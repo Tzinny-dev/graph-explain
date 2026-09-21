@@ -68,6 +68,9 @@ pip install -e .[all]
 Optional extras: `pyg` (PyTorch Geometric), `dgl` (DGL backend),
 `interactive` (plotly/pyvis).
 
+> 📚 **Documentation**: full API reference and guides at
+> https://tzinny-dev.github.io/graph-explain/
+
 ## Quick start
 
 ```python

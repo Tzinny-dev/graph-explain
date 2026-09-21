@@ -41,7 +41,7 @@ dependencies = [
 [project.urls]
 Homepage = "https://github.com/Tzinny-dev/graph-explain"
 Repository = "https://github.com/Tzinny-dev/graph-explain"
-Documentation = "https://github.com/Tzinny-dev/graph-explain#readme"
+Documentation = "https://tzinny-dev.github.io/graph-explain/"
 
 [project.optional-dependencies]
 pyg = ["torch>=2.0", "torch-geometric>=2.5"]
