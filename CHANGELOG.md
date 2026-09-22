@@ -4,6 +4,16 @@ All notable versions of `graph-explain`.
 
 ## [Unreleased]
 
+### Static analysis with CodeQL
+- New `codeql` job in the `ci` workflow: runs on every push to `main` and
+  every pull request, analyzing `src/` with the `security-extended` query
+  suite. Results are uploaded to the **Security** tab as SARIF and fail the
+  build on any high-severity finding in our own code.
+- Standalone `.github/workflows/codeql.yml` runs the same analysis on a
+  weekly Sunday schedule (cron `0 6 * * 0`) to catch drift.
+- Complements the already-enabled Dependabot security updates and secret
+  scanning.
+
 ### Static typing (mypy)
 - `mypy` config in `pyproject.toml` (`[tool.mypy]`): `src` layout,
   `ignore_missing_imports` for untyped ML libs, explicit excludes for

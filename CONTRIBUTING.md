@@ -33,6 +33,10 @@ python -m pytest -q --cov=graph_explain   # test suite with coverage report
 python -m sphinx -b html docs docs/_build/html  # build the docs
 ```
 
+Static analysis (CodeQL, `security-extended` queries) runs in CI on every
+push and pull request; results land in the **Security** tab. The weekly
+`.github/workflows/codeql.yml` keeps the analysis fresh.
+
 Coverage (branch, threshold `fail_under = 80`) is enforced in CI by the
 dedicated `coverage` job and configured in `pyproject.toml`
 (`[tool.coverage.*]`). The badge shown in the README/docs is generated there

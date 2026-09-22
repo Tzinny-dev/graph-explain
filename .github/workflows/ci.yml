@@ -144,6 +144,23 @@ jobs:
             docs/_static/badges/coverage.svg
           if-no-files-found: warn
 
+  codeql:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    steps:
+      - uses: actions/checkout@v7
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: python
+          build-mode: none
+          queries: security-extended
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:python"
+
   docs:
     runs-on: ubuntu-latest
     steps:
