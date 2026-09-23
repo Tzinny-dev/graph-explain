@@ -35,7 +35,7 @@ from .methods import (
 from .narration import Narrator, describe, narrate, summarize
 from .visualization import show, visualize_interactive, visualize_static
 
-__version__ = "0.7.3"
+__version__ = "0.8.0"
 
 __all__ = [
     "AttentionExplainer",

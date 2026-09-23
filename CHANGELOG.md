@@ -2,7 +2,7 @@
 
 All notable versions of `graph-explain`.
 
-## [Unreleased]
+## [0.8.0] - 2026-09-22
 
 ### Static analysis with CodeQL
 - New `codeql` job in the `ci` workflow: runs on every push to `main` and
@@ -49,6 +49,8 @@ All notable versions of `graph-explain`.
   README.
 - Test results (`pytest-results.xml`) are now uploaded as artifacts for all
   Python versions in the matrix.
+
+## [Unreleased]
 
 ## [0.7.3] - 2026-09-21
 
