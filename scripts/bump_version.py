@@ -132,17 +132,25 @@ def finalize_changelog(v: Version) -> Path:
     header = f"## [{v}] - {date.today().isoformat()}"
     text = CHANGELOG.read_text(encoding="utf-8")
     m = _UNRELEASED.search(text); assert m
-    before = text[:m.start()]; after = text[m.end():].lstrip("\n")
-    rest = after
-    next_header = re.search(r"\n## \[", after)
+    # *intro* = everything before the [Unreleased] header (changelog title,
+    # intro paragraph, etc.).  In Keep-a-Changelog layout [Unreleased] sits
+    # at the very top, right after the intro.
+    intro = text[:m.start()].rstrip()
+    after = text[m.end():].lstrip("\n")
+    # *body_text* = content that belongs to the released version (what was
+    # under [Unreleased]).  *rest* = the already-released sections below.
+    next_header = re.search(r"^## \[", after, re.MULTILINE)
     if next_header:
         body_text = after[:next_header.start()].rstrip()
-        rest = after[next_header.start():].lstrip("\n")
+        rest = after[next_header.start():].rstrip()
     else:
-        body_text = after.strip(); rest = ""
-    new_unreleased = "## [Unreleased]\n"
-    new_section = f"{header}\n\n{body_text}"
-    new_text = before + new_section + "\n\n" + new_unreleased + (rest and "\n" + rest or "")
+        body_text = after.rstrip(); rest = ""
+    # Re-assemble: intro → new [Unreleased] (empty) → released section → rest
+    new_text = f"{intro}\n\n## [Unreleased]\n"
+    if body_text:
+        new_text += f"\n{body_text}\n"
+    new_text += f"\n## [{v}] - {date.today().isoformat()}\n\n{rest}\n"
+    new_text = new_text.strip() + "\n"
     CHANGELOG.write_text(new_text, encoding="utf-8")
     return CHANGELOG
 
@@ -170,7 +178,8 @@ def cmd(argv: list[str] | None = None) -> int:
     ap.add_argument("--no-branch-sense", action="store_true")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args(argv)
-    if args.commit: args.bump = True
+    if args.action == "bump" or args.commit:
+        args.bump = True
     v = args.version if args.version else compute_next(branch_sense=not args.no_branch_sense)
     if args.action == "query-version": print(read_current()); return 0
     if args.action == "release-body": print(release_body(v)); return 0
