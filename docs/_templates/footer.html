@@ -1,0 +1,19 @@
+{% extends "!footer.html" %}
+
+{% block extrafooter %}
+  {{ super() }}
+  <div class="donations" role="note" aria-label="Support this project">
+    <p class="donations__label">Support this project</p>
+    <div class="donations__buttons">
+      <a class="donations__btn donations__btn--paypal"
+         href="https://paypal.me/carlostzin"
+         target="_blank" rel="noopener">PayPal</a>
+      <a class="donations__btn donations__btn--bmc"
+         href="https://www.buymeacoffee.com/tzinny"
+         target="_blank" rel="noopener">
+        <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+             alt="Buy Me a Coffee" height="36" loading="lazy">
+      </a>
+    </div>
+  </div>
+{% endblock %}

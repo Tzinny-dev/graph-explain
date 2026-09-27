@@ -55,6 +55,8 @@ jobs:
             echo "::warning::coverage badge unavailable (no ci artifact yet); building docs without it"
           fi
       - name: Build docs
+        env:
+          GA_MEASUREMENT_ID: ${{ vars.GA_MEASUREMENT_ID }}
         run: python -m sphinx -b html docs docs/_build/html
       - name: Upload docs artifact
         uses: actions/upload-pages-artifact@v5

@@ -3,6 +3,8 @@ author = "graph-explain contributors"
 copyright = "2026, graph-explain contributors"
 
 # Add src to path so autodoc can find the package
+import os
+import re
 import sys
 from pathlib import Path
 
@@ -31,6 +33,15 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
+
+GA_MEASUREMENT_ID = os.environ.get("GA_MEASUREMENT_ID", "").strip()
+if not re.fullmatch(r"G-[A-Z0-9]{4,}", GA_MEASUREMENT_ID):
+    GA_MEASUREMENT_ID = ""
+html_context = {"ga_measurement_id": GA_MEASUREMENT_ID}
+html_css_files = ["donations.css"]
+if GA_MEASUREMENT_ID:
+    html_js_files = ["consent.js"]
+    html_css_files.append("consent.css")
 
 autodoc_member_order = "bysource"
 autodoc_default_options = {

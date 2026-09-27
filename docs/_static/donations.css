@@ -1,0 +1,62 @@
+.donations {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e1e4e5;
+}
+
+.donations__label {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #404040;
+}
+
+.donations__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.donations__btn {
+  display: inline-block;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: filter 0.15s ease, box-shadow 0.15s ease;
+}
+
+.donations__btn:hover,
+.donations__btn:focus {
+  filter: brightness(1.08);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.donations__btn:focus-visible {
+  outline: 2px solid #2980b9;
+  outline-offset: 2px;
+}
+
+.donations__btn--paypal {
+  padding: 0.45rem 1.1rem;
+  background: #0070ba;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.donations__btn--bmc img {
+  display: block;
+  height: 36px;
+  width: auto;
+}
+
+@media (prefers-color-scheme: dark) {
+  .donations {
+    border-top-color: #444;
+  }
+
+  .donations__label {
+    color: #bbb;
+  }
+}
