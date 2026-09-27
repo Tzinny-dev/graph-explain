@@ -39,7 +39,7 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/Tzinny-dev/graph-explain"
+Homepage = "https://tzinny-dev.github.io/graph-explain/"
 Repository = "https://github.com/Tzinny-dev/graph-explain"
 Documentation = "https://tzinny-dev.github.io/graph-explain/"
 
