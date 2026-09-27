@@ -1,0 +1,5 @@
+# GitHub has no native Buy Me a Coffee or PayPal integration; both go
+# under `custom` links.
+custom:
+  - https://paypal.me/carlostzin
+  - https://www.buymeacoffee.com/tzinny

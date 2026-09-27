@@ -116,6 +116,11 @@ The Sphinx docs live in `docs/` and are published to GitHub Pages at
 - `docs/conf.py` mocks `torch`, `torch_geometric` and `dgl` via
   `autodoc_mock_imports`, so autodoc can import `graph_explain` even when the
   full ML stack is not installed.
+- The deployed build injects Google Analytics (GA4) when the
+  `GA_MEASUREMENT_ID` repository Actions variable is set (pattern
+  `G-[A-Z0-9]{4,}`, validated in `docs/conf.py`); an empty or invalid value
+  silently disables analytics, and the CI `docs` job always builds without
+  it — only the `docs` workflow passes the variable.
 
 ## Pull requests
 

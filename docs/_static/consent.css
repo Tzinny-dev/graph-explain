@@ -27,6 +27,16 @@
   margin: 0 0 0.75rem;
 }
 
+.cc-banner__link {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.cc-banner__link:hover,
+.cc-banner__link:focus {
+  color: #2980b9;
+}
+
 .cc-banner__actions {
   display: flex;
   justify-content: flex-end;

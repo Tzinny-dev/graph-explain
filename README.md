@@ -293,6 +293,13 @@ Planned ideas (real-world Datasets, more methods, robustness metrics) are
 tracked as issues in the repository — see
 https://github.com/Tzinny-dev/graph-explain/issues
 
+## Support
+
+If graph-explain is useful to you, consider supporting its development:
+
+- [Buy Me a Coffee](https://www.buymeacoffee.com/tzinny)
+- [PayPal](https://paypal.me/carlostzin)
+
 ## License
 
 MIT

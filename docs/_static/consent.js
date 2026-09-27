@@ -38,7 +38,12 @@
     text.className = "cc-banner__text";
     text.textContent =
       "We use Google Analytics to understand how this documentation is used. " +
-      "Analytics cookies are only set if you accept.";
+      "Analytics cookies are only set if you accept. ";
+    var link = document.createElement("a");
+    link.className = "cc-banner__link";
+    link.href = "privacy.html";
+    link.textContent = "Privacy note";
+    text.appendChild(link);
 
     var actions = document.createElement("div");
     actions.className = "cc-banner__actions";

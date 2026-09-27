@@ -4,6 +4,15 @@ All notable versions of `graph-explain`.
 
 ## [Unreleased]
 
+### Documentation
+- Docs site now uses Google Analytics (GA4) with a consent banner: Consent
+  Mode v2 defaults to `denied` until the visitor accepts, and the
+  measurement ID comes from the `GA_MEASUREMENT_ID` GitHub Actions
+  variable (skipped when missing or invalid).
+- Donation buttons (PayPal and Buy Me a Coffee) in the footer of every
+  docs page, plus a privacy note about analytics.
+- Added `.github/FUNDING.yml` with the same donation links.
+
 ## [0.8.0] - 2026-09-22
 
 ### Static analysis with CodeQL
